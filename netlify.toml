@@ -9,7 +9,7 @@
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
-[functions]
+functions 
   check-domain = {
     handler = "check-domain.js"
   }
