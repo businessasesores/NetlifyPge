@@ -8,3 +8,6 @@
     Access-Control-Allow-Origin = "https://businessasesores.web.app"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
+
+[[functions]]
+  check-domain = "check-domain.js"
