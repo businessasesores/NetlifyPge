@@ -11,5 +11,5 @@
 
 [functions]
   check-domain = {
-    handler = "check-domain.js"
+    handler = "check-domain.js" 
   }
