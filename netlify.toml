@@ -1,2 +1,10 @@
 [build]
-  publish = "netlify"
+  command = "npm run build"
+  publish = "build"
+
+[[headers]]
+  for = "/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://businessasesores.web.app"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
