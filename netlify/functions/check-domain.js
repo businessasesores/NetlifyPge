@@ -1,14 +1,15 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  // 1. Verificar la autenticación
+  console.log('Event object:', JSON.stringify(event, null, 2));
+
    const authorization = event.request.headers.get('Authorization'); // Modificado
    const expectedToken = process.env.AUTH_TOKEN;
 
-  if (!authorization || authorization !== `Bearer ${expectedToken}`) {
+  if (!event || !event.headers) {
     return {
-      statusCode: 401,
-      body: JSON.stringify({ error: 'Unauthorized' })
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Invalid event format' })
     };
   }
 
