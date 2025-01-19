@@ -2,8 +2,8 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   // 1. Verificar la autenticación
-  const authorization = event.headers.get('Authorization');
-  const expectedToken = process.env.AUTH_TOKEN;
+   const authorization = event.request.headers.get('Authorization'); // Modificado
+   const expectedToken = process.env.AUTH_TOKEN;
 
   if (!authorization || authorization !== `Bearer ${expectedToken}`) {
     return {
