@@ -3,13 +3,14 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  // Verifica si el evento es válido y si tiene las propiedades esperadas
-  if (!event || !event.request || !event.request.headers) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Solicitud inválida' })
-    };
-  }
+  try {
+    // Verificaciones y lógica de tu función
+    if (!event || !event.request || !event.request.headers) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Solicitud inválida: Falta información en el evento' })
+      };
+    }
 
 
   const origin = event.request.headers.get('Origin');
@@ -45,10 +46,10 @@ exports.handler = async (event) => {
       body: JSON.stringify(response.data)
     };
   } catch (error) {
-    console.error('Error al verificar el dominio:', error);
+    console.error('Error al procesar la solicitud:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
+      body: JSON.stringify({ error: 'Error interno del servidor' })
     };
   }
 };
