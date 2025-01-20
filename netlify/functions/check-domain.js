@@ -16,19 +16,19 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
-    return {
-       statusCode: 200,
-      body: JSON.stringify(response.data)
-      
-    };
-
-      // CORS validation (optional, assuming CORS is configured on Netlify)
+  // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
       return {
         statusCode: 403,
         body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
       };
     }
+
+      return {
+       statusCode: 200,
+      body: JSON.stringify(response.data)
+      
+    };
 
     
   } catch (result) {
