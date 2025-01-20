@@ -15,20 +15,24 @@ exports.handler = async (event) => {
       }
     });
 
-     return {
-      statusCode: 200,
-      body: JSON.stringify(response.data)
-    };
-
     if (origin !== allowedOrigin) {
       return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
+        statusCode: 200,
+      body: JSON.stringify(response.data)
+        
       };
+    }
+
+    return {
+      
+      statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
     };
-    }catch (error) {
+  } catch (error) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio' })
     };
-  };
+  }
+};
+
