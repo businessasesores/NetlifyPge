@@ -16,7 +16,9 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
-  // CORS validation (optional, assuming CORS is configured on Netlify)
+    
+
+      // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
       return {
         statusCode: 403,
@@ -24,17 +26,16 @@ exports.handler = async (event) => {
       };
     }
 
-      return {
+return {
        statusCode: 200,
-      body: JSON.stringify(response.data)
+      body: JSON.stringify(data.result)
       
     };
-
     
   } catch (result) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ result : 'el dominio esta disponible?' })
+      body: JSON.stringify({ result : 'el dominio esta disponible?'  === 'registered'})
     };
   }
 };
