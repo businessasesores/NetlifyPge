@@ -1,26 +1,27 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('Event object:', JSON.stringify(event, null, 2)); // Log the event object for debugging
+  // Log the event object for debugging
+  console.log('Event object:', JSON.stringify(event, null, 2));
 
   // Verify the origin of the request (restrict access to allowed origin)
   const allowedOrigin = 'https://buscador.hostweb.workers.dev'; // Replace with your allowed origin
   const origin = event.headers.get('Origin');
-  if (origin !== allowedOrigin) {
+  if (!event || !event.request || !event.request.headers) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Invalid event format' })
+      body: JSON.stringify({ error: 'Invalid event format' }),
     };
   }
-  // Verify authentication (optional, add if needed)
-  const authorization = event.headers.get('Authorization');
-  const expectedToken = process.env.AUTH_TOKEN;
-  if (authorization && authorization !== `Bearer ${expectedToken}`) {
+  if (origin !== allowedOrigin) {
     return {
-      statusCode: 401,
-      body: JSON.stringify({ error: 'Unauthorized' }),
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
     };
   }
+
+  // Optional authentication (add if needed)
+  // ... (code for authentication is commented out)
 
   // Extract the domain from the query string parameters
   const domain = event.queryStringParameters.domain;
