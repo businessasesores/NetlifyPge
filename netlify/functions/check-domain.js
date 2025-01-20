@@ -31,12 +31,6 @@ return {
       body: JSON.stringify(response.data === 'registered')
       
     };
-
-      if (response.data.status === 'result') {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está registrado' })
-        };
     
   } catch (registered) {
     return {
