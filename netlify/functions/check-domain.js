@@ -18,7 +18,7 @@ exports.handler = async (event) => {
 
     return {
        statusCode: 200,
-      body: JSON.stringify(response.data === 'result')
+      body: JSON.stringify(response.data)
       
     };
 
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
   } catch (result) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ registered: 'el dominio esta disponible?' })
+      body: JSON.stringify({ result : 'el dominio esta disponible?' })
     };
   }
 };
