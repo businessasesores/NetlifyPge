@@ -25,11 +25,10 @@ exports.handler = async (event) => {
         statusCode: 403,
         body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
       };
+    };
     }catch (error) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio' })
     };
-  }
-};
-};
+  };
