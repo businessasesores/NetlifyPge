@@ -3,29 +3,20 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Event object:', JSON.stringify(event, null, 2)); // Log the event object for debugging
 
-  // Check for missing or invalid event structure
-  if (!event || !event.request || !event.request.headers) {
+  // Verify the origin of the request (restrict access to allowed origin)
+  const allowedOrigin = 'https://buscador.hostweb.workers.dev'; // Replace with your allowed origin
+  const origin = event.headers.get('Origin');
+  if (origin !== allowedOrigin) {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Invalid event format' }),
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
     };
   }
 
-  // Extract authorization header (assuming Bearer token format)
-  const authorization = event.request.headers.get('Authorization');
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ error: 'Unauthorized' }),
-    };
-  }
-
-  // Extract the token from the authorization header
-  const token = authorization.split(' ')[1];
-
-  // Verify the token against the environment variable (assuming Netlify)
+  // Verify authentication (optional, add if needed)
+  const authorization = event.headers.get('Authorization');
   const expectedToken = process.env.AUTH_TOKEN;
-  if (token !== expectedToken) {
+  if (authorization && authorization !== `Bearer ${expectedToken}`) {
     return {
       statusCode: 401,
       body: JSON.stringify({ error: 'Unauthorized' }),
