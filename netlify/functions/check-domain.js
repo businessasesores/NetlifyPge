@@ -3,13 +3,22 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Event object:', JSON.stringify(event, null, 2));
 
-   const authorization = event.request.headers.get('Authorization'); // Modificado
-   const expectedToken = process.env.AUTH_TOKEN;
-
+  
   if (!event || !event.headers) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Invalid event format' })
+    };
+  }
+
+   const authorization = event.request.headers.get('Authorization'); // Modificado
+   const expectedToken = process.env.AUTH_TOKEN;
+
+   // Verifica la autenticación
+  if (!authorization || authorization !== `Bearer ${expectedToken}`) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: 'Unauthorized' })
     };
   }
 
