@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
    const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
-    const allowedOrigin = 'https://buscador.hostweb.workers.dev';
+    const allowedOrigin = 'https://businessasesores.web.app';
 
 
   try {
@@ -24,23 +24,16 @@ exports.handler = async (event) => {
       };
     }
 
-    if (response.status === 200) {
-  // Suponiendo que la propiedad que indica el estado del dominio es "status"
-  if (response.data.status === 'registered') {
     return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'El dominio está registrado' })
+       statusCode: 200,
+      body: JSON.stringify(response.data === 'registered')
+      
     };
-  } else {
+  } catch (result) {
     return {
-      statusCode: 404,
-      body: JSON.stringify({ message: 'El dominio no está disponible o no se encontró información' })
+      statusCode: 500,
+      body: JSON.stringify({ result: 'el dominio esta disponible?' })
     };
   }
-} else {
-  console.error('Error en la API de Whois:', response.data);
-  return {
-    statusCode: response.status,
-    body: JSON.stringify({ error: `Error al obtener datos de Whois: ${response.statusText}` })
-  };
 };
+
