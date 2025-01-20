@@ -3,7 +3,7 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Event object:', JSON.stringify(event, null, 2));
 
-  // Verificar el origen de la solicitud (restringe el acceso al origen permitido)
+  // Verificar el origen de la solicitud
   const allowedOrigin = 'https://buscador.hostweb.workers.dev';
   const origin = event.headers.get('Origin');
   if (!event || !event.request || !event.request.headers || origin !== allowedOrigin) {
@@ -13,19 +13,10 @@ exports.handler = async (event) => {
     };
   }
 
-  // Verificar el token de autenticación (opcional, agrega si es necesario)
-  // const authToken = event.headers.get('Authorization');
-  // const expectedToken = process.env.AUTH_TOKEN;
-  // if (authToken !== `Bearer ${expectedToken}`) {
-  //   return {
-  //     statusCode: 401,
-  //     body: JSON.stringify({ error: 'Unauthorized' })
-  //   };
-  // }
-
   // Extraer el dominio de los parámetros de la cadena de consulta
   const domain = event.queryStringParameters.domain;
 
+  // Realizar la solicitud a la API de Whois usando Axios
   try {
     const apiKey = process.env.API_KEY;
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
@@ -45,7 +36,7 @@ exports.handler = async (event) => {
     console.error('Error al verificar el dominio:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error al verificar el dominio' })
+      body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
   }
 };
