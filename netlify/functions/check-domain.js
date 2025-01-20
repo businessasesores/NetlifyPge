@@ -18,7 +18,6 @@ exports.handler = async (event) => {
     if (origin !== allowedOrigin) {
       return {
         statusCode: 200,
-      body: JSON.stringify(response.data)
       body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
         
       };
@@ -27,6 +26,7 @@ exports.handler = async (event) => {
     return {
       
       statusCode: 403,
+      body: JSON.stringify(response.data)
         
     };
   } catch (error) {
