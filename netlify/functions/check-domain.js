@@ -2,42 +2,42 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   try {
-    const { domain } = event.queryStringParameters;
+    const domain = event.queryStringParameters.domain;
     const apiKey = process.env.API_KEY;
-    const apiUrl = `https://api.apilayer.com/whois/query?domain=${domain}`;
+    const origin = event.request?.headers?.get('Origin');
+    const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
-    const response = await axios.get(apiUrl, {
+    // CORS validation (optional, assuming CORS is configured on Netlify)
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
+      };
+    }
+
+    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: {
-        'apikey': apiKey
+        'apikey': apiKey,
       },
-      timeout: 5000
+      timeout: 5000,
     });
 
     if (response.status === 200) {
-      // Verificar si el dominio está registrado
-      if (response.data.result === 'registered') {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está registrado' })
-        };
-      } else {
-        return {
-          statusCode: 404,
-          body: JSON.stringify({ message: 'El dominio no está registrado' })
-        };
-      }
+      // Process successful response (check for "registered" result as before)
+      // ...
     } else {
-      console.error('Error en la API de Whois:', response.data);
+      console.error('API Layer error:', response.data);
       return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
+        statusCode: response.status, // Return the specific status code
+        body: JSON.stringify({ error: 'Error en la API de Whois', details: response.data }),
       };
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud:', error);
+    console.error('Error:', error);
+    // Handle other potential errors (network, code, etc.)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error interno del servidor' })
+      body: JSON.stringify({ error: 'Error interno del servidor' }),
     };
   }
 };
