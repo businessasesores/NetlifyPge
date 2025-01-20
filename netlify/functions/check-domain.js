@@ -1,21 +1,21 @@
+
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  // Log the event object for debugging (optional)
-  console.log('Event Object:', JSON.stringify(event, null, 2));
+  const domain = event.queryStringParameters.domain;
+  const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
+   const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
+    const allowedOrigin = '//buscador.hostweb.workers.dev';
 
-  // Validate required parameters
-  if (!validateRequest(event)) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Solicitud inválida: Falta el parámetro "domain".' })
-    };
-  }
 
-  // Extract domain and origin
-  const { domain, origin } = event.queryStringParameters;
+  try {
+    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+      headers: {
+        'apikey': apiKey
+      }
+    });
 
-  // Check allowed origin
+    // Check allowed origin
   if (!isAllowedOrigin(origin)) {
     return {
       statusCode: 403,
@@ -54,15 +54,3 @@ exports.handler = async (event) => {
   }
 };
 
-// Helper functions for cleaner code
-function validateRequest(event) {
-  return event && event.queryStringParameters && event.queryStringParameters.domain;
-}
-
-function isAllowedOrigin(origin) {
-  return origin === 'https://buscador.hostweb.workers.dev';
-}
-
-function buildWhoisUrl(domain) {
-  return `https://api.apilayer.com/whois/query?domain=${domain}`;
-}
