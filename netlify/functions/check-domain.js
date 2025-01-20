@@ -3,12 +3,14 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  if (!event || !event.request || !event.request.headers) {
+  // Verifica si el evento es válido y si tiene las propiedades esperadas
+  if (!event || !event.request || !event.request.headers || !event.queryStringParameters) {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Formato de evento inválido' })
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Solicitud inválida' })
     };
   }
+
 
 
   const origin = event.request.headers.get('Origin');
