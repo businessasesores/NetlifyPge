@@ -1,24 +1,27 @@
-const axios = require('axios');
+const axios = require('axios'); // Import axios at the module level
 
 exports.handler = async (event) => {
-  // Check if the event object is defined
-  if (!event) {
+  console.log('Event object:', JSON.stringify(event, null, 2));
+
+  if (!event || !event.request || !event.request.headers) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Missing event object' })
+      body: JSON.stringify({ error: 'Invalid event format' })
     };
   }
 
-  // Access headers from the request object
   const origin = event.request.headers.get('Origin');
   const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
-  // ... rest of your code using origin and other event properties
-};
-  // Extraer el dominio de los parámetros de la cadena de consulta
-  const dominio = event.queryStringParameters.domain;
+  if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
+    };
+  }
 
-  // Realizar la solicitud a la API de Whois usando Axios
+  const domain = event.queryStringParameters.domain;
+
   try {
     const apiKey = process.env.API_KEY;
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
@@ -27,12 +30,12 @@ exports.handler = async (event) => {
       }
     });
 
-    // Analizar la respuesta de la API para determinar la disponibilidad
-    const estaDisponible = !response.data.available;
-
     return {
       statusCode: 200,
-      body: JSON.stringify({ disponible: estaDisponible })
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin
+      },
+      body: JSON.stringify(response.data)
     };
   } catch (error) {
     console.error('Error al verificar el dominio:', error);
@@ -40,4 +43,5 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
-  };
+  }
+};
