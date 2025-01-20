@@ -16,24 +16,24 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
-      // CORS validation (optional, assuming CORS is configured on Netlify)
-    if (origin !== allowedOrigin) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
-      };
-    }
-
+      if (response.status === 200) {
+  // Suponiendo que la propiedad que indica el estado del dominio es "status"
+  if (response.data.status === 'registered') {
     return {
-       statusCode: 200,
-      body: JSON.stringify(response.data === 'registered')
-      
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está registrado' })
     };
-  } catch (result) {
+  } else {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ result: 'el dominio esta disponible?' })
+      statusCode: 404,
+      body: JSON.stringify({ message: 'El dominio no está disponible o no se encontró información' })
     };
   }
-};
+} else {
+  console.error('Error en la API de Whois:', response.data);
+  return {
+    statusCode: response.status,
+    body: JSON.stringify({ error: `Error al obtener datos de Whois: ${response.statusText}` })
+  };
+}
 
