@@ -26,7 +26,7 @@ exports.handler = async (event) => {
       };
     }
 
- return {
+return {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio está registrado' })
         };
@@ -36,18 +36,11 @@ exports.handler = async (event) => {
           body: JSON.stringify({ message: 'El dominio está disponible' })
         };
       }
-    } else {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
-      };
     
-  } catch (error) {
-    console.error('Error:', error);
+  } catch (result) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error interno del servidor' })
+      body: JSON.stringify({ result : 'el dominio esta disponible?'  === 'registered'})
     };
   };
-
 
