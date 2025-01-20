@@ -8,15 +8,6 @@ exports.handler = async (event) => {
     const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
 
-  try {
-    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: {
-        'apikey': apiKey
-      },
-      timeout: 5000
-    });
-
-    
 
       // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
@@ -24,8 +15,16 @@ exports.handler = async (event) => {
         statusCode: 403,
         body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
       };
-    }
-
+    
+  try {
+    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+      headers: {
+        'apikey': apiKey
+      },
+      timeout: 5000
+    })
+    
+};
 return {
        statusCode: 200,
       body: JSON.stringify(response.data === 'registered')
