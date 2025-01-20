@@ -34,14 +34,15 @@ return {
     } else {
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: 'registrado' })
+          body: JSON.stringify({ message: 'El dominio está disponible' })
         };
-      
+      }
+    
   } catch (result) {
     return {
       statusCode: 500,
       body: JSON.stringify({ registered : 'el dominio esta disponible?' })
     };
-  }
-};
+  };
+
 
