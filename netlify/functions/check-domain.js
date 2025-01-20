@@ -3,13 +3,16 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  // Verifica si el evento es válido y si tiene las propiedades esperadas
-  if (!event || !event.request || !event.request.headers || !event.queryStringParameters) {
+  // Verifica si el evento tiene la estructura esperada
+  if (!event || !event.queryStringParameters || !event.queryStringParameters.domain) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Solicitud inválida' })
+      body: JSON.stringify({ error: 'Solicitud inválida. Falta el parámetro "domain".' })
     };
   }
+
+  // Resto de tu código para consultar la API de Whois...
+};
 
 
 
