@@ -16,7 +16,15 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
-      if (response.status === 200) {
+      // CORS validation (optional, assuming CORS is configured on Netlify)
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
+      };
+    }
+
+    if (response.status === 200) {
   // Suponiendo que la propiedad que indica el estado del dominio es "status"
   if (response.data.status === 'registered') {
     return {
@@ -36,5 +44,3 @@ exports.handler = async (event) => {
     body: JSON.stringify({ error: `Error al obtener datos de Whois: ${response.statusText}` })
   };
 }
-};
-
