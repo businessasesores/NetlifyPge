@@ -8,11 +8,10 @@ exports.handler = async (event) => {
   const origin = event.headers.get('Origin');
   if (origin !== allowedOrigin) {
     return {
-      statusCode: 403,
-      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Invalid event format' })
     };
   }
-
   // Verify authentication (optional, add if needed)
   const authorization = event.headers.get('Authorization');
   const expectedToken = process.env.AUTH_TOKEN;
