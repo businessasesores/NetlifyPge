@@ -16,6 +16,12 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
+    return {
+       statusCode: 200,
+      body: JSON.stringify(response.data === 'registered')
+      
+    };
+
       // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
       return {
@@ -24,11 +30,7 @@ exports.handler = async (event) => {
       };
     }
 
-    return {
-       statusCode: 200,
-      body: JSON.stringify(response.data === 'registered')
-      
-    };
+    
   } catch (result) {
     return {
       statusCode: 500,
