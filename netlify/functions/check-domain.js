@@ -26,34 +26,46 @@ exports.handler = async (event) => {
     const domain = event.queryStringParameters.domain;
 
     try {
-  const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-    headers: {
-      'apikey': apiKey
-    },
-    timeout: 5000 // Agregar un timeout para evitar que la solicitud se bloquee
-  });
+      const apiKey = process.env.API_KEY; // Asegúrate de tener la clave API configurada en Netlify
+      const apiUrl = `https://api.apilayer.com/whois/query?domain=${domain}`;
 
-  // Manejar la respuesta de la API
-  if (response.status === 200) {
-    // Procesar los datos de la respuesta
-  } else {
-    console.error('Error en la API de Whois:', response.data);
-    return {
-      statusCode: response.status,
-      body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
-    };
-  }
-} catch (error) {
-  console.error('Error al realizar la solicitud:', error);
-  if (error.code === 'ECONNABORTED') {
-    return {
-      statusCode: 504,
-      body: JSON.stringify({ error: 'Tiempo de espera agotado' })
-    };
-  } else {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          'apikey': apiKey
+        },
+        timeout: 5000 // Agregar un timeout para evitar que la solicitud se bloquee
+      });
+
+      if (response.status === 200) {
+        const whoisData = response.data;
+        // Procesar los datos de la API de Whois
+        console.log('Datos de Whois:', whoisData); // Ejemplo de cómo acceder a los datos
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Consulta a Whois realizada con éxito',
+            data: whoisData
+          })
+        };
+      } else {
+        console.error('Error en la API de Whois:', response.data);
+        return {
+          statusCode: response.status,
+          body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
+        };
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Error interno del servidor' })
+      };
+    }
+  } catch (error) {
+    console.error('Error general:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error interno del servidor' })
     };
   }
-}
+};
