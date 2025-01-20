@@ -1,26 +1,19 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('Event object:', JSON.stringify(event, null, 2)); 
+  console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  if (!event || !event.request || !event.request.headers) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Invalid event format' })
-    };
-  }
-
-  const origin = event.request.headers.get('Origin'); 
-  const allowedOrigin = 'https://buscador.hostweb.workers.dev'; 
-  if (origin !== allowedOrigin) {
+  // Verificación del origen de la solicitud
+  const origen = event.request.headers.get('Origin');
+  const origenPermitido = 'https://buscador.hostweb.workers.dev';
+  if (origen !== origenPermitido) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
+      body: JSON.stringify({ error: 'Prohibido: Origen de la solicitud no permitido' }),
     };
   }
 
-  // Resto de tu código... 
-}; 
+  // Extraer el dominio de los parámetros de la cadena de consulta
   const dominio = event.queryStringParameters.domain;
 
   // Realizar la solicitud a la API de Whois usando Axios
@@ -45,4 +38,5 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
-  };
+  }
+};
