@@ -27,20 +27,21 @@ exports.handler = async (event) => {
     }
 
 return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está registrado' })
-        };
-      } else {
+       statusCode: 200,
+      body: JSON.stringify(response.data === 'registered')
+      
+    };
+    } else {
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está disponible' })
+          body: JSON.stringify({ message: 'registrado' })
         };
-      }
-    
+      
   } catch (result) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ result : 'el dominio esta disponible?'  === 'registered'})
+      body: JSON.stringify({ registered : 'el dominio esta disponible?' })
     };
-  };
+  }
+};
 
