@@ -26,34 +26,28 @@ exports.handler = async (event) => {
     // Extract domain from query parameters
     const domain = event.queryStringParameters.domain;
 
-    try {
-      const apiKey = process.env.API_KEY; // Ensure API key is set as an environment variable
-
-      // Make the request to the Whois API using Axios
-      const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-        headers: {
-          'apikey': apiKey
-        }
-      });
-
-      // Handle successful response
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': allowedOrigin // Allow CORS
-        },
-        body: JSON.stringify(response.data)
-      };
-    } catch (error) {
-      console.error('Error al verificar el dominio:', error);
-      // Log more specific error details here
-      console.error('Error details:', error.response?.data || error.message);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Error al verificar el dominio' })
-      };
+   try {
+  const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+    headers: {
+      'apikey': apiKey
     }
-  } catch (error) {
-    console.error('Error al procesar la solicitud:', error);
-  } // Added closing curly brace
-};
+  });
+
+  // Manejar la respuesta de la API
+  if (response.status === 200) {
+    // Procesar los datos de la respuesta
+  } else {
+    // Manejar errores de la API
+    console.error('Error en la API de Whois:', response.data);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
+    };
+  }
+} catch (error) {
+  console.error('Error al realizar la solicitud:', error);
+  return {
+    statusCode: 500,
+    body: JSON.stringify({ error: 'Error interno del servidor' })
+  };
+}
