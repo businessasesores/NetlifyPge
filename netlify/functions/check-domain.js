@@ -31,18 +31,18 @@ return {
       body: JSON.stringify(response.data === 'registered')
       
     };
-    } else {
+
+      if (response.data.status === 'result') {
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está disponible' })
+          body: JSON.stringify({ message: 'El dominio está registrado' })
         };
-      }
     
-  } catch (result) {
+  } catch (registered) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ registered : 'el dominio esta disponible?' })
+      body: JSON.stringify({ result : 'el dominio esta disponible?' })
     };
-  };
-
+  }
+};
 
