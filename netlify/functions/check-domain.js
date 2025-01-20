@@ -7,12 +7,11 @@ exports.handler = async (event) => {
   const origenPermitido = 'https://buscador.hostweb.workers.dev';
   const origen = event.headers.get('Origin');
   if (!event || !event.request || !event.request.headers || origin !== origenPermitido) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ error: 'Prohibido: Origen de la solicitud no permitido' })
+     return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Invalid event format' })
     };
   }
-
   // Extraer el dominio de los parámetros de la cadena de consulta
   const dominio = event.queryStringParameters.domain;
 
