@@ -36,28 +36,25 @@ exports.handler = async (event) => {
         }
       });
 
-      // Handle successful response
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': allowedOrigin // Allow CORS
-        },
-        body: JSON.stringify(response.data)
-      };
-    } catch (error) {
-      console.error('Error al verificar el dominio:', error);
-      // Log more specific error details here
-      console.error('Error details:', error.response?.data || error.message);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Error al verificar el dominio' })
-      };
-    }
-  } catch (error) {
-    console.error('Error general:', error);
+       if (response.status === 200) {
+    // Procesar los datos de la respuesta
     return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Error interno del servidor' })
+      statusCode: 200,
+      body: JSON.stringify(response.data)
+    };
+  } else {
+    // Manejar errores de la API
+    console.error('Error en la API de Whois:', response.data);
+    return {
+      statusCode: response.status, // Devuelve el código de estado de la API
+      body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
     };
   }
+} catch (error) {
+  console.error('Error inesperado:', error);
+  return {
+    statusCode: 500,
+    body: JSON.stringify({ error: 'Error interno del servidor', details: error.message })
+  };
+};
 };
