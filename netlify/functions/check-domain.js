@@ -54,4 +54,6 @@ exports.handler = async (event) => {
       };
     }
   } catch (error) {
-    console.error('Error al procesar
+    console.error('Error al procesar la solicitud:', error);
+  } // Added closing curly brace
+};
