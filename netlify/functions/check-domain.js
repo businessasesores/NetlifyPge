@@ -1,8 +1,10 @@
+const axios = require('axios');
+
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
   try {
-    // Verificaciones y lógica de tu función
+    // Verifications and logic of your function
     if (!event || !event.queryStringParameters || !event.queryStringParameters.domain) {
       return {
         statusCode: 400,
@@ -13,7 +15,7 @@ exports.handler = async (event) => {
     const origin = event.request.headers.get('Origin');
     const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
-    // Check origin and return error if not allowed (Reference: Checks for allowed origin)
+    // Check origin and return error if not allowed
     if (origin !== allowedOrigin) {
       return {
         statusCode: 403,
@@ -21,20 +23,20 @@ exports.handler = async (event) => {
       };
     }
 
-    // Extract domain from query parameters (Reference: Extracts domain from query string)
+    // Extract domain from query parameters
     const domain = event.queryStringParameters.domain;
 
     try {
       const apiKey = process.env.API_KEY; // Ensure API key is set as an environment variable
 
-      // Make the request to the Whois API using Axios (Reference: Makes the Whois API request)
+      // Make the request to the Whois API using Axios
       const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
         headers: {
           'apikey': apiKey
         }
       });
 
-      // Handle successful response (Reference: Handles successful response with CORS)
+      // Handle successful response
       return {
         statusCode: 200,
         headers: {
@@ -44,16 +46,12 @@ exports.handler = async (event) => {
       };
     } catch (error) {
       console.error('Error al verificar el dominio:', error);
+      // Log more specific error details here
+      console.error('Error details:', error.response?.data || error.message);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
+        body: JSON.stringify({ error: 'Error al verificar el dominio' })
       };
     }
-    } catch (error) {
-    console.error('Error al procesar la solicitud:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Error interno del servidor' })
-    };
-  }
-};
+  } catch (error) {
+    console.error('Error al procesar
