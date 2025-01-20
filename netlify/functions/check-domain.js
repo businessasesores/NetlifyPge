@@ -1,18 +1,20 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('Objeto de evento:', JSON.stringify(event, null, 2));
-
-  // Verificación del origen de la solicitud
-  const origen = event.request.headers.get('Origin');
-  const origenPermitido = 'https://buscador.hostweb.workers.dev';
-  if (origen !== origenPermitido) {
+  // Check if the event object is defined
+  if (!event) {
     return {
-      statusCode: 403,
-      body: JSON.stringify({ error: 'Prohibido: Origen de la solicitud no permitido' }),
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Missing event object' })
     };
   }
 
+  // Access headers from the request object
+  const origin = event.request.headers.get('Origin');
+  const allowedOrigin = 'https://buscador.hostweb.workers.dev';
+
+  // ... rest of your code using origin and other event properties
+};
   // Extraer el dominio de los parámetros de la cadena de consulta
   const dominio = event.queryStringParameters.domain;
 
@@ -38,5 +40,4 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
-  }
-};
+  };
