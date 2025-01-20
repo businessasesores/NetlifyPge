@@ -26,45 +26,34 @@ exports.handler = async (event) => {
     const domain = event.queryStringParameters.domain;
 
     try {
-      const apiKey = process.env.API_KEY;
-      const apiUrl = `https://api.apilayer.com/whois/query?domain=${domain}`;
+  const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+    headers: {
+      'apikey': apiKey
+    },
+    timeout: 5000 // Agregar un timeout para evitar que la solicitud se bloquee
+  });
 
-      const response = await axios.get(apiUrl, {
-        headers: {
-          'apikey': apiKey
-        }
-      });
-
-      if (response.status === 200) {
-        const whoisData = response.data;
-        // Aquí puedes procesar los datos de la API de Whois
-        // Por ejemplo, extraer información específica como el nombre del registrante, fecha de registro, etc.
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            message: 'Consulta a Whois realizada con éxito',
-            data: whoisData
-          })
-        };
-      } else {
-        console.error('Error en la API de Whois:', response.data);
-        return {
-          statusCode: response.status,
-          body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
-        };
-      }
-    } catch (error) {
-      console.error('Error al realizar la solicitud:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Error interno del servidor', details: error.message })
-      };
-    }
-  } catch (error) {
-    console.error('Error general:', error);
+  // Manejar la respuesta de la API
+  if (response.status === 200) {
+    // Procesar los datos de la respuesta
+  } else {
+    console.error('Error en la API de Whois:', response.data);
+    return {
+      statusCode: response.status,
+      body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
+    };
+  }
+} catch (error) {
+  console.error('Error al realizar la solicitud:', error);
+  if (error.code === 'ECONNABORTED') {
+    return {
+      statusCode: 504,
+      body: JSON.stringify({ error: 'Tiempo de espera agotado' })
+    };
+  } else {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error interno del servidor' })
     };
   }
-};
+}
