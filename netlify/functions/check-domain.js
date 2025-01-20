@@ -43,5 +43,4 @@ exports.handler = async (event) => {
     statusCode: response.status,
     body: JSON.stringify({ error: `Error al obtener datos de Whois: ${response.statusText}` })
   };
-}
 };
