@@ -1,15 +1,15 @@
-const axios = require('axios'); // Import axios at the module level
+const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('Event object:', JSON.stringify(event, null, 2));
+  console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  // Verify event object and its properties
   if (!event || !event.request || !event.request.headers) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Invalid event format' })
+      body: JSON.stringify({ error: 'Formato de evento inválido' })
     };
   }
+
 
   const origin = event.request.headers.get('Origin');
   const allowedOrigin = 'https://buscador.hostweb.workers.dev';
