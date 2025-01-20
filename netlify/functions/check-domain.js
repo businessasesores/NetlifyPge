@@ -16,23 +16,23 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
+      // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
       return {
-        statusCode: 200,
-      body: JSON.stringify(response.data)
-        
+        statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
       };
     }
 
     return {
+       statusCode: 200,
+      body: JSON.stringify(response.data)
       
-      statusCode: 403,
-        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
     };
-  } catch (error) {
+  } catch (result) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error al verificar el dominio' })
+      body: JSON.stringify({ result: 'el dominio esta disponible?' })
     };
   }
 };
