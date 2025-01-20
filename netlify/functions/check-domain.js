@@ -3,11 +3,11 @@ const axios = require('axios');
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
 
-  // Verifica si el evento tiene la estructura esperada
-  if (!event || !event.queryStringParameters || !event.queryStringParameters.domain) {
+  // Verifica si el evento es válido y si tiene las propiedades esperadas
+  if (!event || !event.request || !event.request.headers) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Solicitud inválida. Falta el parámetro "domain".' })
+      body: JSON.stringify({ error: 'Solicitud inválida' })
     };
   }
 
@@ -50,5 +50,5 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
-  };
+  }
 };
