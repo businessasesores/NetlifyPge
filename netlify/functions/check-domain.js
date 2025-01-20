@@ -32,7 +32,7 @@ return {
       
     };
     
-  } catch (registered) {
+  } catch (result) {
     return {
       statusCode: 500,
       body: JSON.stringify({ result : 'el dominio esta disponible?' })
