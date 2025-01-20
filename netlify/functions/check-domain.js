@@ -2,7 +2,7 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   console.log('Objeto de evento:', JSON.stringify(event, null, 2));
-
+};
   // Verifica si el evento tiene la estructura esperada
   if (!event || !event.queryStringParameters || !event.queryStringParameters.domain) {
     return {
@@ -11,11 +11,7 @@ exports.handler = async (event) => {
     };
   }
 
-  // Resto de tu código para consultar la API de Whois...
-};
-
-
-
+  
   const origin = event.request.headers.get('Origin');
   const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
@@ -54,5 +50,4 @@ exports.handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ error: 'Error al verificar el dominio: ' + error.message })
     };
-  }
-};
+  };
