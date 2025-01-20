@@ -7,12 +7,6 @@ exports.handler = async (event) => {
    const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
     const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
-  if (origin !== allowedOrigin) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
-      };
-    }
 
   try {
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
@@ -20,6 +14,14 @@ exports.handler = async (event) => {
         'apikey': apiKey
       }
     });
+
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
+      };
+    }
+    
     return {
       statusCode: 200,
       body: JSON.stringify(response.data)
