@@ -4,8 +4,8 @@ const axios = require('axios');
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
-  const { domain, origin } = event.queryStringParameters;
-  const allowedOrigin = 'https://buscador.hostweb.workers.dev';
+   const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
+    const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
   if (origin !== allowedOrigin) {
       return {
