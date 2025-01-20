@@ -1,34 +1,35 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  console.log('Event object:', JSON.stringify(event, null, 2)); // Log the event object for debugging
+  console.log('Event object:', JSON.stringify(event, null, 2)); 
 
-  // Verifica el origen de la solicitud (restringe el acceso al origen permitido)
+  // Verificar si el objeto 'event' y sus propiedades existen
+  if (!event || !event.request || !event.request.headers) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Invalid event format' })
+    };
+  }
+
+  // Verificar el origen de la solicitud (restringe el acceso al origen permitido)
   const allowedOrigin = 'https://buscador.hostweb.workers.dev'; // Reemplaza con tu origen permitido
-  const origin = event.headers.get('Origin');
-  if (!event || !event.request || !event.request.headers || origin !== allowedOrigin) {
+  const origin = event.request.headers.get('Origin'); 
+  if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' }),
+      body: JSON.stringify({ error: 'Forbidden: Request origin not allowed' })
     };
   }
 
-  // Verifica la autenticación (opcional, agrega si es necesario)
-  const authorization = event.headers.get('Authorization');
-  const expectedToken = process.env.AUTH_TOKEN;
-  if (authorization && authorization !== `Bearer ${expectedToken}`) {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ error: 'Unauthorized' }),
-    };
-  }
+  // Verificar la autenticación (opcional)
+  // ... (código para autenticación)
 
-  // Extrae el dominio de los parámetros de la cadena de consulta
+  // Extraer el dominio de los parámetros de la cadena de consulta
   const domain = event.queryStringParameters.domain;
 
   // Validación opcional del dominio (agrega lógica si es necesario)
 
-  // Realiza la solicitud a la API de Whois usando Axios
+  // Realizar la solicitud a la API de Whois usando Axios
   try {
     const apiKey = process.env.API_KEY;
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
