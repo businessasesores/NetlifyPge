@@ -14,16 +14,20 @@ exports.handler = async (event) => {
     });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
      
 return {
        statusCode: 200,
 =======
+=======
+>>>>>>> parent of 65ed498 (booomm)
     return {
       statusCode: 200,
 >>>>>>> parent of 65ed498 (booomm)
       body: JSON.stringify(response.data)
       
     };
+<<<<<<< HEAD
 <<<<<<< HEAD
 
      // CORS validation (optional, assuming CORS is configured on Netlify)
@@ -45,6 +49,8 @@ return {
     
   } catch (message) {
 =======
+=======
+>>>>>>> parent of 65ed498 (booomm)
   } catch (error) {
     console.error('Error:', error);
 >>>>>>> parent of 65ed498 (booomm)
@@ -55,6 +61,9 @@ return {
   }
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 65ed498 (booomm)
 =======
 >>>>>>> parent of 65ed498 (booomm)
