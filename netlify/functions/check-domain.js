@@ -30,7 +30,7 @@ exports.handler = async (event) => {
 
     if (response.status === 200) {
       // Ajusta esta parte según la estructura de la respuesta de tu API de Whois
-      if (response.data. === 'result') {
+      if (response.data === 'result') {
         return {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio está registrado' })
@@ -41,7 +41,7 @@ exports.handler = async (event) => {
           body: JSON.stringify({ message: 'El dominio está disponible' })
         };
       }
-      
+
   } catch (message) {
 
     return {
