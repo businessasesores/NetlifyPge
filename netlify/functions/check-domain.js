@@ -31,18 +31,18 @@ if (response.status === 200) {
       if (response.data) { 
         return {
           statusCode: 200,
-          body: JSON.stringify(response.data)({ message: 'El dominio está registrado' === 'available' })
+          body: JSON.stringify(data.result)({ result: 'El dominio está registrado' === 'available' })
         };
       } else { 
         return {
           statusCode: 200,
-          body: JSON.stringify({ result: 'El dominio está disponible' })
+          body: JSON.stringify(!data.available)({ result: 'El dominio está disponible' })
         };
       }
     } else {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
+        body: JSON.stringify({ message: 'Error al obtener datos de Whois' })
       };
     }
 
