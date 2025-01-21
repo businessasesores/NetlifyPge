@@ -1,14 +1,14 @@
- const axios = require('axios');
+const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
   // Declare and assign the allowedOrigin variable
-  const allowedOrigin = 'https://businessasesores.web.app'; 
+  const allowedOrigin = 'https://businessasesores.web.app';
 
   // Access headers using the new event structure
-  const origin = event.headers['origin']; 
+  const origin = event.headers['origin'];
 
   if (origin !== allowedOrigin) {
     return {
@@ -25,23 +25,31 @@ exports.handler = async (event) => {
       timeout: 5000, // Set a timeout for the API request
     });
 
-  if (response.status === 200) {
-  // Ajusta esta parte según la estructura de la respuesta de tu API de Whois
-  if (response.data.status === 'registered') {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'El dominio está registrado' })
-    };
-  } else (message) {
-    return  {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'El dominio está disponible' })
-    };
-  }
-} catch (message) {
+    if (response.status === 200) {
+      // Adjust this part according to your Whois API response structure
+      if (response.data.status === 'registered') {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ result: 'El dominio está registrado' })
+        };
+      } else {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ message: 'El dominio está disponible' })
+        };
+      }
+    } else {
+      console.error('Error en la API de Whois:', response.data);
+      return {
+        statusCode: response.status,
+        body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
+      };
+    }
+  } catch (error) {
+    console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message : 'el dominio esta disponible?' })
+      body: JSON.stringify({ message: 'Error interno del servidor' })
     };
   }
 };
