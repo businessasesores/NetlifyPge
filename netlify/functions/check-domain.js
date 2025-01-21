@@ -19,34 +19,22 @@ exports.handler = async (event) => {
 
     });
 
-      if (response.status === 200) {
-    if (response.data.status === 'registered') {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'El dominio está registrado' })
-      };
-    } else {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'El dominio está disponible' })
-      };
-    }
-  } else if (response.status === 404) {
+     if (response.status === 200) {
+  if (response.data.status === 'registered') {
     return {
-      statusCode: 404,
-      body: JSON.stringify({ message: 'Dominio no encontrado' })
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está registrado' })
     };
   } else {
     return {
-      statusCode: response.status,
-      body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está disponible' })
     };
   }
-} catch (error) {
-  console.error('Error:', error);
+} else {
   return {
-    statusCode: 500,
-    body: JSON.stringify({ message: 'Error interno del servidor' })
+    statusCode: response.status,
+    body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
   };
 }
 
