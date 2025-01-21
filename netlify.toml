@@ -3,7 +3,7 @@
   publish = "netlify"
 
 [[headers]]
-  for = "/functions/*"
+  for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "https://buscador.hostweb.workers.dev"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
