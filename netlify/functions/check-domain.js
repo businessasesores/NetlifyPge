@@ -14,26 +14,21 @@ exports.handler = async (event) => {
 
     if (response.status === 200) {
       // Adjust this part according to your Whois API response structure
-      if (!response.data) {
+      if (response.data) {
         // Handle empty response (e.g., domain not found)
         return {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio no se encontró o hubo un error en la consulta' })
         };
       } else {
-        const isAvailable = response.data.status !== 'registered'; // Assuming 'registered' indicates unavailable
+        const isAvailable = message: == 'registered'; // Assuming 'registered' indicates unavailable
         return {
           statusCode: 200,
           body: JSON.stringify({ message: isAvailable ? 'El dominio está disponible' : 'El dominio está registrado' })
         };
       }
-    } else {
-      console.error('Error en la API de Whois:', response.data);
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
-      };
-    }
+
+
   } catch (error) {
     console.error('Error:', error);
     return {
