@@ -4,9 +4,12 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
-  
-const allowedOrigins = 'https://businessasesores.web.app'; // Puedes agregar más orígenes si es necesario
- const origin = event.headers['origin'];
+  // Declare and assign the allowedOrigin variable
+  const allowedOrigin = 'https://businessasesores.web.app'; 
+
+  // Access headers using the new event structure
+  const origin = event.headers['origin']; 
+
   if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
@@ -22,34 +25,23 @@ const allowedOrigins = 'https://businessasesores.web.app'; // Puedes agregar má
       timeout: 5000, // Set a timeout for the API request
     });
 
-    // Check the response status code for errors
-    if (response.status !== 200) {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois' }),
-      };
-    }
-
-    // Determine domain availability based on API response structure
-    let domainAvailability;
-    if (response.data.status === 'registered') {
-      domainAvailability = 'El dominio está registrado';
-    } else if (response.data.available) { // Assuming 'available' property exists
-      domainAvailability = 'El dominio está disponible';
-    } else {
-      // Handle cases where availability is unclear or the response structure is different
-      domainAvailability = 'La disponibilidad del dominio no se pudo determinar.';
-    }
-
+  if (response.status === 200) {
+  // Ajusta esta parte según la estructura de la respuesta de tu API de Whois
+  if (response.data.status === 'registered') {
     return {
       statusCode: 200,
-      body: JSON.stringify({ result: domainAvailability }),
+      body: JSON.stringify({ message: 'El dominio está registrado' })
     };
-  } catch (error) {
-    console.error('Error:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Error interno del servidor' }),
+  } else (message) {
+    return  {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está disponible' })
     };
   }
-};
+} else {
+  console.error('Error en la API de Whois:', response.data);
+  return {
+    statusCode: response.status,
+    body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
+  };
+}
