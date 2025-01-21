@@ -1,27 +1,30 @@
-
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters.domain;
-  const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
-   const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
-    const allowedOrigin = 'https://buscador.hostweb.workers.dev';
-
-
   try {
-    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+    const { domain } = event.queryStringParameters;
+    const apiKey = process.env.API_KEY;
+    const apiUrl = `https://api.apilayer.com/whois/query?domain=${domain}`;
+
+    const response = await axios.get(apiUrl, {
       headers: {
         'apikey': apiKey
       },
       timeout: 5000
     });
 
+<<<<<<< HEAD
      
 return {
        statusCode: 200,
+=======
+    return {
+      statusCode: 200,
+>>>>>>> parent of 65ed498 (booomm)
       body: JSON.stringify(response.data)
       
     };
+<<<<<<< HEAD
 
      // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
@@ -41,10 +44,17 @@ return {
 
     
   } catch (message) {
+=======
+  } catch (error) {
+    console.error('Error:', error);
+>>>>>>> parent of 65ed498 (booomm)
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'el dominio esta disponible?' })
     };
   }
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 65ed498 (booomm)
