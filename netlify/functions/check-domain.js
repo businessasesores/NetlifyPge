@@ -19,8 +19,7 @@ exports.handler = async (event) => {
 
     });
 
-      
-if (response.status === 200) {
+    if (response.status === 200) {
   if (response.data.status === 'registered') {
     return {
       statusCode: 200,
@@ -38,3 +37,5 @@ if (response.status === 200) {
     body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
   };
 }
+
+};
