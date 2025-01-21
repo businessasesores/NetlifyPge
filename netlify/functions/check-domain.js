@@ -33,7 +33,12 @@ if (response.status === 200) {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio está registrado' })
         };
-     
+      } else { 
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ result: 'El dominio está disponible' })
+        };
+      }
     } else {
       return {
         statusCode: response.status,
