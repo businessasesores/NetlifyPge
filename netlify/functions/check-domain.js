@@ -19,36 +19,31 @@ exports.handler = async (event) => {
 
     });
 
-      
-
-
+       // Check response status code for successful request (200)
+    if (response.status === 200) {
+      // Adjust this part according to your Whois API response structure
+      if (response.data.status === 'registered') {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ message: 'El dominio está registrado' })
+        };
+      } else {
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ message: 'El dominio está disponible' })
+        };
+      }
+    } else {
+      return {
+        statusCode: response.status, // Return the actual status code from the API
+        body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
+      };
+    }
+  } catch (error) {
+    console.error('Error:', error);
     return {
-
-      statusCode: 200,
-
-      body: JSON.stringify(response.data)
-
-
-    };
-
-    if (origin !== allowedOrigin) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ result: 'Solicitud no autorizada: Origen no permitido' })
-    };
-  }
-
-
-  } catch (message) {
-
-    return {
-
       statusCode: 500,
-
-      body: JSON.stringify({ message: 'el dominio esta disponible?' })
-
+      body: JSON.stringify({ message: 'Error interno del servidor' })
     };
-
   }
-
 };
