@@ -16,6 +16,14 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
+    // CORS validation (optional, assuming CORS is configured on Netlify)
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
+      };
+    };
+
 return {
        statusCode: 200,
       body: JSON.stringify(response.data)
@@ -24,22 +32,14 @@ return {
 
      return  {
           statusCode: 200,
-          body: JSON.stringify({ messege : 'El dominio está disponible'})
+          body: JSON.stringify({ result: 'El dominio está disponible' (response.data.result === 'registered') })
         };  
 
-      // CORS validation (optional, assuming CORS is configured on Netlify)
-    if (origin !== allowedOrigin) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
-      };
-    };
-
-    
-  } catch (messege) {
+      
+  } catch (message) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ result : 'el dominio esta disponible?' (response.data.result === 'registered') })
+      body: JSON.stringify({ message : 'el dominio esta disponible?' })
     };
   }
 };
