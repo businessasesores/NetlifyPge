@@ -7,14 +7,7 @@ exports.handler = async (event) => {
    const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
     const allowedOrigin = 'https://businessasesores.web.app';
       
-       // CORS validation (optional, assuming CORS is configured on Netlify)
-    if (origin !== allowedOrigin) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
-      };
-    };
-
+    
 
 
   try {
@@ -32,8 +25,17 @@ return {
       
     };
 
+       // CORS validation (optional, assuming CORS is configured on Netlify)
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
+      };
+    };
+
+
      return  {
-          statusCode: 200,
+          statusCode: 400,
           body: JSON.stringify({ result: 'El dominio está disponible' (response.data.result === 'registered') })
         };  
 
@@ -42,7 +44,7 @@ return {
     
   } catch (message) {
     return {
-      statusCode: 200,
+      statusCode: 500,
       body: JSON.stringify({ message : 'el dominio esta disponible?' })
     };
   }
