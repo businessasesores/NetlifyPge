@@ -6,7 +6,7 @@ exports.handler = async (event) => {
 
   // CORS validation
   const origin = event.headers.get('Origin');
-  const allowedOrigin = 'https://businessasesores.web.app';
+  const allowedOrigin = 'https://buscador.hostweb.workers.dev';
 
   if (origin !== allowedOrigin) {
     return {
