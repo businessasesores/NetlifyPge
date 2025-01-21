@@ -15,6 +15,7 @@ exports.handler = async (event) => {
 
       },
 
+
       timeout: 5000
 
     });
@@ -40,12 +41,7 @@ exports.handler = async (event) => {
           body: JSON.stringify({ message: 'El dominio está disponible' })
         };
       }
-    } else {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
-      };
-    }
+      
   } catch (message) {
 
     return {
