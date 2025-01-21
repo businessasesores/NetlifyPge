@@ -19,23 +19,36 @@ exports.handler = async (event) => {
 
     });
 
-     if (response.status === 200) {
-  if (response.data.status === 'registered') {
+      
+
+
     return {
+
       statusCode: 200,
-      body: JSON.stringify({ message: 'El dominio está registrado' })
+
+      body: JSON.stringify(response.data)
+
+
     };
-  } else {
+
+    if (origin !== allowedOrigin) {
     return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'El dominio está disponible' })
+      statusCode: 403,
+      body: JSON.stringify({ result: 'Solicitud no autorizada: Origen no permitido' })
     };
   }
-} else {
-  return {
-    statusCode: response.status,
-    body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
-  };
-}
+
+
+  } catch (message) {
+
+    return {
+
+      statusCode: 500,
+
+      body: JSON.stringify({ message: 'el dominio esta disponible?' })
+
+    };
+
+  }
 
 };
