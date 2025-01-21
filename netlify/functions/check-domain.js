@@ -4,18 +4,15 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
-
-     const origin = event.headers.get('Origin');
+   const origin = event.headers['origin'];
 const allowedOrigins = ['https://buscador.hostweb.workers.dev/', 'https://businessasesores.web.app']; // Puedes agregar más orígenes si es necesario
 
-if (!allowedOrigins.includes(origin)) {
-  return {
-    statusCode: 403,
-    body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
-  };
-}
-
-
+  if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
+    };
+  }
 
   try {
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
