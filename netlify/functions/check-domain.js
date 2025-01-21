@@ -1,16 +1,17 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
+  // Obtener el dominio de los parámetros de la query
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY;
-  const allowedOrigin = 'https://businessasesores.web.app';
+  const allowedOrigin = 'https://businessasesores.web.app';  // Origen permitido
   const origin = event.headers.origin;
 
-  // Log origin and domain received
+  // Log de la solicitud para depuración
   console.log('Origin:', origin);
   console.log('Domain:', domain);
 
-  // Validar el origen de la solicitud
+  // Verificar que el origen de la solicitud sea el permitido
   if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
@@ -18,7 +19,7 @@ exports.handler = async (event) => {
     };
   }
 
-  // Validar el formato del dominio
+  // Validar que el formato del dominio sea correcto
   const domainRegex = /^[a-z0-9]+(-*[a-z0-9]+)*(\.([a-z0-9]+(-*[a-z0-9]+)*))*$/i;
   if (!domainRegex.test(domain)) {
     return {
@@ -28,19 +29,17 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Realizar la solicitud a la API de Whois
-    console.log('Making Whois API request for:', domain);
+    // Hacer la solicitud a la API de Whois para obtener la información del dominio
+    console.log('Haciendo solicitud a la API de Whois para:', domain);
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: {
-        'apikey': apiKey
-      }
+      headers: { 'apikey': apiKey }  // Pasar la API Key en el header
     });
 
     // Verificar la respuesta de la API
     if (response.status === 200 && response.data && typeof response.data.status === 'string') {
       return {
         statusCode: 200,
-        body: JSON.stringify(response.data)
+        body: JSON.stringify(response.data)  // Retornar los datos del dominio
       };
     } else {
       console.error('Error status:', response.status);
