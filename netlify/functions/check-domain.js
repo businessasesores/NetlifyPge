@@ -2,11 +2,11 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
-  const apiKey = process.env.API_KEY; 
+  const apiKey = process.env.API_KEY;
 
-  // Access headers using the new event structure
-  const origin = event.headers['origin']; 
-  const allowedOrigin = 'https://buscador.hostweb.workers.dev'; 
+  // CORS validation
+  const origin = event.headers['origin'];
+  const allowedOrigin = 'https://businessasesores.web.app';
 
   if (origin !== allowedOrigin) {
     return {
@@ -23,16 +23,16 @@ exports.handler = async (event) => {
     });
 
     if (response.status === 200) {
-      // Assuming the API returns a "status" property 
-      if (response.data.status === 'registered') {
+      // Ajusta esta parte según la estructura de la respuesta de tu API de Whois
+      if (response.data.availability === 'available') { // Ajusta según tu API
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está registrado' })
+          body: JSON.stringify({ message: 'El dominio está disponible' })
         };
       } else {
         return {
           statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está disponible' })
+          body: JSON.stringify({ message: 'El dominio está registrado' })
         };
       }
     } else {
