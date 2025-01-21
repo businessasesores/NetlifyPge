@@ -21,7 +21,11 @@ return {
       body: JSON.stringify(response.data === 'registered')
       
     };
-    
+
+     return {
+          statusCode: 200,
+          body: JSON.stringify({ message: 'El dominio está disponible' })
+        };  
 
       // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
@@ -29,12 +33,7 @@ return {
         statusCode: 403,
         body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
       };
-    }
-
-     return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está disponible' })
-        };
+    };
 
     
   } catch (result) {
