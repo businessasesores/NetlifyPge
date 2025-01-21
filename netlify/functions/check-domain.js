@@ -1,52 +1,56 @@
-
 const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
-  const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
-   const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
-    const allowedOrigin = 'https://businessasesores.web.app';
-      
-    
+  const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
+  // CORS validation (assuming CORS is configured on Netlify)
+  const origin = event.request?.headers?.get('Origin');
+  const allowedOrigin = 'https://businessasesores.web.app';
+
+  if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
+    };
+  }
 
   try {
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: {
-        'apikey': apiKey
+        'apikey': apiKey,
       },
-      timeout: 5000
+      timeout: 5000, // Set a timeout for the API request
     });
 
-     
-return {
-       statusCode: 200,
-      body: JSON.stringify(response.data)
-      
-    };
-
-       // CORS validation (optional, assuming CORS is configured on Netlify)
-    if (origin !== allowedOrigin) {
+    // Check the response status code for errors
+    if (response.status !== 200) {
       return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
+        statusCode: response.status,
+        body: JSON.stringify({ error: 'Error al obtener datos de Whois' }),
       };
+    }
+
+    // Determine domain availability based on API response structure
+    let domainAvailability;
+    if (response.data.status === 'registered') {
+      domainAvailability = 'El dominio está registrado';
+    } else if (response.data.available) { // Assuming 'available' property exists
+      domainAvailability = 'El dominio está disponible';
+    } else {
+      // Handle cases where availability is unclear or the response structure is different
+      domainAvailability = 'La disponibilidad del dominio no se pudo determinar.';
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ result: domainAvailability }),
     };
-
-
-     return  {
-          statusCode: 400,
-          body: JSON.stringify({ result: 'El dominio está disponible' (response.data.result === 'registered') })
-        };  
-
-    
-
-    
-  } catch (message) {
+  } catch (error) {
+    console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message : 'el dominio esta disponible?' })
+      body: JSON.stringify({ error: 'Error interno del servidor' }),
     };
   }
 };
-
