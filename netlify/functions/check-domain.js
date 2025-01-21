@@ -27,7 +27,7 @@ return {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio está disponible' })
         };  
-      };
+      }
 
       // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
