@@ -26,9 +26,7 @@ exports.handler = async (event) => {
     };
   }
 
-
-     
-      } else result: { 
+      } else result:{ 
         return {
           statusCode: 200,
           body: JSON.stringify(response.data)
@@ -40,7 +38,7 @@ exports.handler = async (event) => {
 
       statusCode: 500,
 
-      body: JSON.stringify(!data.available)({ message: 'el dominio esta disponible?' })
+      body: JSON.stringify({ message: 'el dominio esta disponible?' })
 
     };
 
