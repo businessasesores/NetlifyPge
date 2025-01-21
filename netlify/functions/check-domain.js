@@ -23,25 +23,13 @@ exports.handler = async (event) => {
     });
 
     if (response.status === 200) {
-      // Assuming the API returns a "status" property indicating registration
-      if (response.data.status === 'registered') {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            domain: response.data.domain,
-            status: 'registrado',
-            // Otras propiedades relevantes
-          })
-        };
-      } else {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            domain: response.data.domain,
-            status: 'disponible'
-          })
-        };
-      }
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          domain,
+          status: response.data.result === 'registered' ? 'registrado' : 'disponible'
+        })
+      };
     } else {
       return {
         statusCode: response.status,
