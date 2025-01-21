@@ -5,6 +5,6 @@
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
-    Access-Control-Allow-Origin = "https://businessasesores.web.app"
+    Access-Control-Allow-Origin = "https://buscador.hostweb.workers.dev/"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"

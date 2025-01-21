@@ -4,7 +4,7 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // La clave de la API almacenada como variable de entorno
   const origin = event.headers['origin']; // El origen de la solicitud (para validar CORS)
-  const allowedOrigin = 'https://businessasesores.web.app'; // El origen permitido
+  const allowedOrigin = 'https://buscador.hostweb.workers.dev'; // El origen permitido
 
   // Verificar CORS antes de hacer la solicitud a la API
   if (origin !== allowedOrigin) {
