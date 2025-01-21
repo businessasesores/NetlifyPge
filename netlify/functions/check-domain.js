@@ -38,10 +38,10 @@ exports.handler = async (event) => {
       body: JSON.stringify({ message: 'El dominio está disponible' })
     };
   }
-} else {
-  console.error('Error en la API de Whois:', response.data);
-  return {
-    statusCode: response.status,
-    body: JSON.stringify({ error: 'Error al obtener datos de Whois', details: response.data })
-  };
-}
+} catch (message) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message : 'el dominio esta disponible?' })
+    };
+  }
+};
