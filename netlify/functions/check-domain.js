@@ -1,11 +1,11 @@
-const axios = require('axios');
+ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
   
-const allowedOrigins = 'https://businessasesores.web.app', 'https://buscador.hostweb.workers.dev/'; // Puedes agregar más orígenes si es necesario
+const allowedOrigins = 'https://businessasesores.web.app'; // Puedes agregar más orígenes si es necesario
  const origin = event.headers['origin'];
   if (origin !== allowedOrigin) {
     return {
