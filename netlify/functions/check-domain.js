@@ -19,31 +19,22 @@ exports.handler = async (event) => {
 
     });
 
-       // Check response status code for successful request (200)
-    if (response.status === 200) {
-      // Adjust this part according to your Whois API response structure
-      if (response.data.status === 'registered') {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está registrado' })
-        };
-      } else {
-        return {
-          statusCode: 200,
-          body: JSON.stringify({ message: 'El dominio está disponible' })
-        };
-      }
-    } else {
-      return {
-        statusCode: response.status, // Return the actual status code from the API
-        body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
-      };
-    }
-  } catch (error) {
-    console.error('Error:', error);
+      
+if (response.status === 200) {
+  if (response.data.status === 'registered') {
     return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Error interno del servidor' })
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está registrado' })
+    };
+  } else {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'El dominio está disponible' })
     };
   }
-};
+} else {
+  return {
+    statusCode: response.status,
+    body: JSON.stringify({ error: 'Error al obtener datos de Whois' })
+  };
+}
