@@ -6,6 +6,15 @@ exports.handler = async (event) => {
   const apiKey = process.env.API_KEY; // Obtener la clave API desde una variable de entorno
    const origin = event.request?.headers?.get('Origin'); // Usamos el operador de encadenamiento opcional para evitar errores si headers es undefined
     const allowedOrigin = 'https://buscador.hostweb.workers.dev';
+      
+       // CORS validation (optional, assuming CORS is configured on Netlify)
+    if (origin !== allowedOrigin) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
+      };
+    };
+
 
 
   try {
@@ -16,14 +25,7 @@ exports.handler = async (event) => {
       timeout: 5000
     });
 
-      // CORS validation (optional, assuming CORS is configured on Netlify)
-    if (origin !== allowedOrigin) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
-      };
-    };
-
+     
 return {
        statusCode: 200,
       body: JSON.stringify(response.data)
