@@ -24,7 +24,7 @@ return {
 
      return  {
           statusCode: 200,
-          body: JSON.stringify({ messege : 'El dominio está disponible' (response.data.result === 'registered') })
+          body: JSON.stringify({ messege : 'El dominio está disponible'})
         };  
 
       // CORS validation (optional, assuming CORS is configured on Netlify)
@@ -36,7 +36,7 @@ return {
     };
 
     
-  } catch (errorMessege) {
+  } catch (messege) {
     return {
       statusCode: 500,
       body: JSON.stringify({ result : 'el dominio esta disponible?' (response.data.result === 'registered') })
