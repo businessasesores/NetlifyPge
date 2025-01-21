@@ -1,59 +1,93 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  // Obtener el dominio de los parámetros de la query
-  const domain = event.queryStringParameters.domain;
-  const apiKey = process.env.API_KEY;
-  const allowedOrigin = 'https://businessasesores.web.app';  // Origen permitido
+  const domain = event.queryStringParameters?.domain; // Manejar caso donde domain no esté definido
+  const authToken = process.env.AUTH_TOKEN; // Clave secreta para autenticar con el Worker
+  const apiKey = process.env.API_KEY; // Clave secreta para la API de Apilayer
+  const allowedOrigin = 'https://businessasesores.web.app'; // Origen permitido
   const origin = event.headers.origin;
+  const incomingAuthHeader = event.headers['authorization']; // Leer el encabezado Authorization
 
-  // Log de la solicitud para depuración
   console.log('Origin:', origin);
   console.log('Domain:', domain);
 
-  // Verificar que el origen de la solicitud sea el permitido
+  // Verificar que el origen sea permitido
   if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' })
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido.' }),
     };
   }
 
-  // Validar que el formato del dominio sea correcto
+  // Verificar que el encabezado Authorization esté presente y sea válido
+  if (!incomingAuthHeader || incomingAuthHeader !== `Bearer ${authToken}`) {
+    return {
+      statusCode: 403,
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Token inválido o ausente.' }),
+    };
+  }
+
+  // Validar que el parámetro domain exista
+  if (!domain) {
+    return {
+      statusCode: 400,
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify({ error: 'Falta el parámetro domain en la solicitud.' }),
+    };
+  }
+
+  // Validar el formato del dominio
   const domainRegex = /^[a-z0-9]+(-*[a-z0-9]+)*(\.([a-z0-9]+(-*[a-z0-9]+)*))*$/i;
   if (!domainRegex.test(domain)) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Formato de dominio inválido' })
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify({ error: 'Formato de dominio inválido.' }),
     };
   }
 
   try {
-    // Hacer la solicitud a la API de Whois para obtener la información del dominio
-    console.log('Haciendo solicitud a la API de Whois para:', domain);
+    // Solicitar información del dominio a la API de Apilayer
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: { 'apikey': apiKey }  // Pasar la API Key en el header
+      headers: { 'apikey': apiKey }, // Usar la clave secreta para la API de Apilayer
     });
 
-    // Verificar la respuesta de la API
-    if (response.status === 200 && response.data && typeof response.data.status === 'string') {
+    if (response.status === 200 && response.data) {
       return {
         statusCode: 200,
-        body: JSON.stringify(response.data)  // Retornar los datos del dominio
+        headers: {
+          'Access-Control-Allow-Origin': allowedOrigin,
+        },
+        body: JSON.stringify(response.data),
       };
     } else {
-      console.error('Error status:', response.status);
-      console.error('Error response:', response.data);
+      console.error('Error en la respuesta de Apilayer:', response.status, response.data);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Error al obtener datos del dominio.' })
+        headers: {
+          'Access-Control-Allow-Origin': allowedOrigin,
+        },
+        body: JSON.stringify({ error: 'Error al obtener datos del dominio desde la API externa.' }),
       };
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error en la solicitud a Apilayer:', error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error al procesar la solicitud del dominio.' })
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify({ error: 'Error interno al procesar la solicitud del dominio.' }),
     };
   }
 };
