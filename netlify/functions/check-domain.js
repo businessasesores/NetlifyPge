@@ -18,14 +18,16 @@ exports.handler = async (event) => {
 
 return {
        statusCode: 200,
-      body: JSON.stringify(response.data === 'registered')
+      body: JSON.stringify(response.data)
       
     };
 
-     return {
+     return (result) {
+       return {
           statusCode: 200,
           body: JSON.stringify({ message: 'El dominio está disponible' })
         };  
+      };
 
       // CORS validation (optional, assuming CORS is configured on Netlify)
     if (origin !== allowedOrigin) {
@@ -36,7 +38,7 @@ return {
     };
 
     
-  } catch (result) {
+  } catch (message) {
     return {
       statusCode: 500,
       body: JSON.stringify({ result : 'el dominio esta disponible?' })
