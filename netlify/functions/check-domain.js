@@ -4,8 +4,11 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
   const apiKey = process.env.API_KEY; // Obtain API key from an environment variable
 
-   const origin = event.headers['origin'];
-const allowedOrigins = ['https://buscador.hostweb.workers.dev/', 'https://businessasesores.web.app']; // Puedes agregar más orígenes si es necesario
+   // Declare and assign the allowedOrigin variable
+  const allowedOrigin = 'https://businessasesores.web.app'; 
+
+  // Access headers using the new event structure
+  const origin = event.headers['origin']; 
 
   if (origin !== allowedOrigin) {
     return {
