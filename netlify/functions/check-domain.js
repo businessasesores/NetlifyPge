@@ -7,6 +7,15 @@ exports.handler = async (event) => {
   const allowedOrigin = 'https://businessasesores.web.app';
 
 
+   if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ result: 'Solicitud no autorizada: Origen no permitido' })
+    };
+  }
+
+
+
   try {
 
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
@@ -31,13 +40,7 @@ exports.handler = async (event) => {
 
     };
 
-    if (origin !== allowedOrigin) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ result: 'Solicitud no autorizada: Origen no permitido' })
-    };
-  }
-
+   
 
   } catch (message) {
 
