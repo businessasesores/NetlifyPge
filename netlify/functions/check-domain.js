@@ -6,18 +6,8 @@ exports.handler = async (event) => {
   const allowedOrigin = 'https://businessasesores.web.app';  // El origen permitido para solicitudes
 
   // Verificamos que la solicitud provenga de un origen permitido (tu frontend)
-  const origin = event.headers.origin;
-  if (origin !== allowedOrigin) {
-    return {
-      statusCode: 403,  // Forbidden si el origen no está permitido
-      headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido.' }),
-    };
-    
+  
+
   try {
     // Consulta a la API WHOIS
     const response = await axios.get(`https://www.whoisxmlapi.com/whoisserver/WhoisService?domainName=${domain}&apiKey=${apiKey}&outputFormat=JSON`);
@@ -32,6 +22,19 @@ exports.handler = async (event) => {
       body: JSON.stringify(response.data)
 
 
+    };
+
+
+    const origin = event.headers.origin;
+  if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,  // Forbidden si el origen no está permitido
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido.' }),
     };
 
 
