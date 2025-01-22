@@ -1,12 +1,12 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters.domain; // Dominio a verificar
-  const apiKey = process.env.API_KEY; // Variable de entorno en Netlify
-  const allowedOrigin = 'https://businessasesores.web.app'; // Dominio de tu frontend
+  const domain = event.queryStringParameters.domain;
+  const apiKey = process.env.API_KEY; 
+  const allowedOrigin = 'https://businessasesores.web.app';
   const origin = event.headers.origin;
 
-  // Verificar CORS
+  // Manejo de CORS para solicitudes válidas
   if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
@@ -19,26 +19,13 @@ exports.handler = async (event) => {
     };
   }
 
-  // Verificar que se envíe el dominio
-  if (!domain) {
-    return {
-      statusCode: 400,
-      headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-      body: JSON.stringify({ error: 'El parámetro "domain" es obligatorio.' }),
-    };
-  }
-
   try {
-    // Realizar solicitud a la API de WHOIS
+    // Llamada a la API de WHOIS
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: { apikey: apiKey },
     });
 
-    // Retornar datos para dominios registrados
+    // Retornar datos de la API con encabezados CORS
     return {
       statusCode: 200,
       headers: {
@@ -46,14 +33,10 @@ exports.handler = async (event) => {
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
-      body: JSON.stringify({
-        result: 'registered',
-        domain,
-        whois: response.data,
-      }),
+      body: JSON.stringify(response.data),
     };
   } catch (error) {
-    // Manejo de dominios no registrados o errores 404
+    // Manejo de errores para dominios no registrados
     if (error.response && error.response.status === 404) {
       return {
         statusCode: 200,
@@ -62,11 +45,11 @@ exports.handler = async (event) => {
           'Access-Control-Allow-Methods': 'GET, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
         },
-        body: JSON.stringify({ result: 'available', domain }),
+        body: JSON.stringify({ result: 'available' }),
       };
     }
 
-    // Manejar errores generales
+    // Errores generales
     return {
       statusCode: 500,
       headers: {
@@ -74,9 +57,7 @@ exports.handler = async (event) => {
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
-      body: JSON.stringify({ error: 'Error interno en el servidor.' }),
+      body: JSON.stringify({ error: 'Error en el servidor o en la consulta.' }),
     };
   }
 };
-
-
