@@ -2,58 +2,52 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
-  const apiKeyApilayer = process.env.API_KEY_APILAYER; // Clave API para Apilayer
-  const apiKeyNameCom = process.env.API_KEY_NAMECOM;   // Clave API para Name.com
-  const allowedOrigin = 'https://businessasesores.web.app';
-  const origin = event.headers.origin;
+  const origin = event.headers.origin || event.headers['x-forwarded-for'];
+  const secretHeader = event.headers['x-worker-secret']; // Header personalizado
+  const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
+  const apiKey = process.env.apiKey; // Variable para la API de apilayer
+  const apiKeyNameCom = process.env.apiKeyNameCom; // Variable para la API de Name.com
 
-  if (origin !== allowedOrigin) {
+  // Validación del secreto para permitir solo solicitudes autorizadas
+  if (secretHeader !== expectedSecret) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
+      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
     };
   }
 
   try {
-    // Llamada a la API de Apilayer
+    // Llamadas a las APIs
     const apilayerPromise = axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: { apikey: apiKeyApilayer },
-      timeout: 8000, // Tiempo máximo de espera para Apilayer
+      headers: { apikey: apiKey },
+      timeout: 8000,
     });
 
-    // Llamada a la API de Name.com
     const nameComPromise = axios.get(`https://api.name.com/v4/domains:check?domain=${domain}`, {
       headers: { Authorization: `Bearer ${apiKeyNameCom}` },
-      timeout: 8000, // Tiempo máximo de espera para Name.com
+      timeout: 8000,
     });
 
-    // Ejecutar ambas llamadas en paralelo
     const [apilayerResponse, nameComResponse] = await Promise.all([apilayerPromise, nameComPromise]);
 
-    // Procesar las respuestas
-    const apilayerData = apilayerResponse.data; // Datos de Apilayer
-    const nameComData = nameComResponse.data;   // Datos de Name.com
-
-    // Combinar respuestas (puedes personalizar este formato)
-    const combinedResponse = {
-      apilayer: apilayerData,
-      nameCom: nameComData,
-    };
-
+    // Combinar respuestas
     return {
       statusCode: 200,
-      body: JSON.stringify(combinedResponse),
+      headers: {
+        'Access-Control-Allow-Origin': '*', // Permite cualquier origen (ajústalo según tus necesidades)
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        apilayer: apilayerResponse.data,
+        nameCom: nameComResponse.data,
+      }),
     };
 
   } catch (error) {
-    console.error('Error en la función:', error.message);
-
+    console.error('Error:', error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        message: 'Ocurrió un error al procesar la solicitud.',
-        error: error.message,
-      }),
+      body: JSON.stringify({ message: 'Error procesando la solicitud.', error: error.message }),
     };
   }
 };
