@@ -1,60 +1,86 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters.domain;
-  const apiKey = process.env.API_KEY; // Tu API key
-  const allowedOrigin = 'https://businessasesores.web.app'; // Origen permitido (tu frontend)
+  const domain = event.queryStringParameters.domain; // Obtener el dominio desde la query string
+  const apiKey = process.env.API_KEY;  // Tu API Key para hacer la consulta a la API de Whois
+  const allowedOrigin = 'https://businessasesores.web.app';  // El origen permitido para solicitudes
 
-  // Manejo de CORS para solicitudes válidas
+  // Verificamos que la solicitud provenga de un origen permitido (tu frontend)
   const origin = event.headers.origin;
   if (origin !== allowedOrigin) {
     return {
-      statusCode: 403,
+      statusCode: 403,  // Forbidden si el origen no está permitido
       headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,  // Permitir acceso desde tu frontend
-        'Access-Control-Allow-Methods': 'GET, OPTIONS', // Métodos permitidos
-        'Access-Control-Allow-Headers': 'Content-Type', // Encabezados permitidos
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido.' }),
     };
   }
 
+  // Aseguramos que el dominio se haya proporcionado en la consulta
+  if (!domain) {
+    return {
+      statusCode: 400,  // Bad request si no se proporciona el dominio
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'El parámetro "domain" es obligatorio.' }),
+    };
+  }
+
   try {
-    // Realizamos la solicitud a la API de Whois
+    // Realizamos la consulta a la API de Whois para verificar el dominio
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: { apikey: apiKey },
     });
 
-    // Si encontramos el dominio en la respuesta, devolvemos 'registered'
+    // Si la respuesta es positiva (dominio registrado)
     if (response.data.status === 'registered') {
       return {
         statusCode: 200,
         headers: {
-          'Access-Control-Allow-Origin': allowedOrigin, // Permitir CORS
+          'Access-Control-Allow-Origin': allowedOrigin,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ result: 'registered' }), // Dominio registrado
+        body: JSON.stringify({ result: 'registered', domain: domain }),
+      };
+    }
+    
+    // Si el dominio está disponible (no registrado)
+    if (response.data.status === 'available') {
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': allowedOrigin,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ result: 'available', domain: domain }),
       };
     }
 
-    // Si el dominio no está registrado, devolvemos 'available'
+    // Si no se pudo determinar el estado, regresamos un error
     return {
-      statusCode: 200,
+      statusCode: 404,
       headers: {
-        'Access-Control-Allow-Origin': allowedOrigin, // Permitir CORS
+        'Access-Control-Allow-Origin': allowedOrigin,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ result: 'available' }), // Dominio disponible
+      body: JSON.stringify({ error: 'No se pudo determinar el estado del dominio.' }),
     };
+
   } catch (error) {
-    // Manejo de errores generales
+    // En caso de un error con la consulta (error general)
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': allowedOrigin, // Permitir CORS
+        'Access-Control-Allow-Origin': allowedOrigin,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'Error en la consulta de Whois' }),
+      body: JSON.stringify({ error: 'Error en la consulta de Whois. El dominio no fue encontrado o hubo un problema.' }),
     };
   }
 };
+
