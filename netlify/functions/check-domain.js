@@ -5,7 +5,7 @@ exports.handler = async (event) => {
   const origin = event.headers.origin || event.headers['x-forwarded-for'];
   const secretHeader = event.headers['x-worker-secret']; // Header personalizado
   const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
-  const apiKey = process.env.apiKey; // Variable para la API de apilayer
+  const apiKey = process.env.apiKey; // Variable para la API de Apilayer
   const apiKeyNameCom = process.env.apiKeyNameCom; // Variable para la API de Name.com
 
   // Validación del secreto para permitir solo solicitudes autorizadas
@@ -17,20 +17,26 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Llamadas a las APIs
+    // Llamada a la API de Apilayer para verificar disponibilidad
     const apilayerPromise = axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: { apikey: apiKey },
-      timeout: 8000,
+      headers: {
+        'apikey': apiKey, // Verifica que la clave no tenga espacios en blanco ni caracteres adicionales
+      },
+      timeout: 5000,
     });
 
+    // Llamada a la API de Name.com para verificar disponibilidad
     const nameComPromise = axios.get(`https://api.name.com/v4/domains:check?domain=${domain}`, {
-      headers: { Authorization: `Bearer ${apiKeyNameCom}` },
+      headers: {
+        Authorization: `Bearer ${apiKeyNameCom}`,
+      },
       timeout: 8000,
     });
 
+    // Espera ambas respuestas (Apilayer y Name.com) usando Promise.all
     const [apilayerResponse, nameComResponse] = await Promise.all([apilayerPromise, nameComPromise]);
 
-    // Combinar respuestas
+    // Combinar las respuestas y enviarlas
     return {
       statusCode: 200,
       headers: {
