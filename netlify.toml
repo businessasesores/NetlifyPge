@@ -3,5 +3,4 @@
   [headers.values]
     Access-Control-Allow-Origin = "https://businessasesores.web.app"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Authorization, Content-Type"
-    Access-Control-Max-Age = "3600"  # Cache para las solicitudes preflight (opcional)
+    Access-Control-Allow-Headers = "Content-Type"
