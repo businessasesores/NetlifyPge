@@ -5,6 +5,6 @@
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
-     'Access-Control-Allow-Origin':   allowedOrigin,
-     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-     'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    Access-Control-Allow-Origin = "https://businessasesores.web.app"  # Dominio permitido
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Authorization, Content-Type"

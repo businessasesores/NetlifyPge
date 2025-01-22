@@ -4,12 +4,13 @@ exports.handler = async (event) => {
   const domain = event.queryStringParameters?.domain; // Obtener el dominio de la solicitud
   const authToken = process.env.AUTH_TOKEN; // Token secreto almacenado en Netlify como variable de entorno
   const apiKey = process.env.API_KEY; // Clave API para la API de Whois almacenada en Netlify como variable de entorno
-  const allowedOrigin = 'https://businessasesores.web.app'; // Frontend autorizado
+  const allowedOrigin = 'https://businessasesores.web.app'; // Frontend autorizado (tu dominio de Firebase Hosting)
   const origin = event.headers.origin; // Origen de la solicitud
   const incomingAuthHeader = event.headers['authorization']; // Leer el encabezado Authorization
 
-  // Verificar si la solicitud es de un origen permitido
+  // 1. Verificar que el origen de la solicitud es permitido
   if (origin !== allowedOrigin) {
+    console.log('Origen no permitido: ', origin);
     return {
       statusCode: 403,
       headers: {
@@ -21,8 +22,9 @@ exports.handler = async (event) => {
     };
   }
 
-  // Verificar que el token de autenticación es válido
+  // 2. Verificar que el token de autenticación es válido
   if (!incomingAuthHeader || incomingAuthHeader !== `Bearer ${authToken}`) {
+    console.log('Token inválido o ausente');
     return {
       statusCode: 403,
       headers: {
@@ -34,7 +36,7 @@ exports.handler = async (event) => {
     };
   }
 
-  // Validar que el parámetro "domain" esté presente
+  // 3. Validar que el parámetro 'domain' esté presente
   if (!domain) {
     return {
       statusCode: 400,
@@ -45,7 +47,7 @@ exports.handler = async (event) => {
     };
   }
 
-  // Validar el formato del dominio
+  // 4. Validar el formato del dominio
   const domainRegex = /^[a-z0-9]+(-*[a-z0-9]+)*(\.([a-z0-9]+(-*[a-z0-9]+)*))*$/i;
   if (!domainRegex.test(domain)) {
     return {
@@ -58,12 +60,14 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Realizar la solicitud a la API externa (como Apilayer o WhoisXML) para verificar el dominio
+    // 5. Realizar la solicitud a la API externa (Apilayer o WhoisXML)
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: { 'apikey': apiKey }, // Usar la API Key configurada en las variables de entorno de Netlify
     });
 
+    // 6. Verificar la respuesta y devolver los datos
     if (response.status === 200 && response.data) {
+      console.log('Respuesta de la API:', response.data);
       return {
         statusCode: 200,
         headers: {
@@ -71,15 +75,14 @@ exports.handler = async (event) => {
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
           'Access-Control-Allow-Headers': 'Authorization, Content-Type',
         },
-        body: JSON.stringify(response.data), // Devolver los datos de Whois
+        body: JSON.stringify(response.data), // Devolver los datos de Whois (registrado/no registrado)
       };
     } else {
+      console.error('Error en la respuesta de la API:', response.status, response.data);
       return {
         statusCode: 500,
         headers: {
           'Access-Control-Allow-Origin': allowedOrigin,
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Authorization, Content-Type',
         },
         body: JSON.stringify({ error: 'Error al obtener datos del dominio desde la API externa.' }),
       };
