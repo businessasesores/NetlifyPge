@@ -1,10 +1,7 @@
-[build]
-  command = ""
-  publish = "netlify"
-
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "https://businessasesores.web.app"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Authorization, Content-Type"
+    Access-Control-Max-Age = "3600"  # Cache para las solicitudes preflight (opcional)
