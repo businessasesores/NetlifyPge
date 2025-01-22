@@ -2,63 +2,58 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain;
-  
-  // Asegúrate de que tus API Keys están correctamente configuradas en las variables de entorno de Netlify
-  const apiKeyApilayer = process.env.API_KEY;   // Clave de apilayer
-  const apiKeyNameCom = process.env.API_KEY_NAMECOM; // Clave de name.com
+  const apiKeyApilayer = process.env.API_KEY_APILAYER; // Clave API para Apilayer
+  const apiKeyNameCom = process.env.API_KEY_NAMECOM;   // Clave API para Name.com
+  const allowedOrigin = 'https://businessasesores.web.app';
+  const origin = event.headers.origin;
 
-  // Comienza con la consulta de apilayer
-  try {
-    const responseApilayer = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: {
-        'apikey': apiKeyApilayer,  // Clave API de apilayer
-      },
-    });
-
-    // Verifica si apilayer dice que el dominio está registrado
-    if (responseApilayer.data && responseApilayer.data.status === 'registered') {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ result: 'registered' }),  // Dominio registrado
-      };
-    } else {
-      // Si apilayer no encuentra el dominio, consulta en name.com
-      return await checkDomainWithNameCom(domain);
-    }
-
-  } catch (errorApilayer) {
-    console.error('Error en la consulta de apilayer:', errorApilayer);
-    // Si apilayer falla, intenta con name.com
-    return await checkDomainWithNameCom(domain);
+  if (origin !== allowedOrigin) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Solicitud no autorizada: Origen no permitido' }),
+    };
   }
-};
 
-// Función para verificar el dominio con la API de name.com
-const checkDomainWithNameCom = async (domain) => {
   try {
-    const responseNameCom = await axios.get(`https://api.name.com/v4/domains/${domain}/available`, {
-      headers: {
-        'Authorization': `Bearer ${process.env.API_KEY_NAMECOM}`,  // Clave API de name.com
-      },
+    // Llamada a la API de Apilayer
+    const apilayerPromise = axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+      headers: { apikey: apiKeyApilayer },
+      timeout: 8000, // Tiempo máximo de espera para Apilayer
     });
 
-    if (responseNameCom.data && responseNameCom.data.available === true) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ result: 'available' }),  // Dominio disponible
-      };
-    } else {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ result: 'not available' }),  // Dominio no disponible
-      };
-    }
+    // Llamada a la API de Name.com
+    const nameComPromise = axios.get(`https://api.name.com/v4/domains:check?domain=${domain}`, {
+      headers: { Authorization: `Bearer ${apiKeyNameCom}` },
+      timeout: 8000, // Tiempo máximo de espera para Name.com
+    });
 
-  } catch (errorNameCom) {
-    console.error('Error en la consulta de name.com:', errorNameCom);
+    // Ejecutar ambas llamadas en paralelo
+    const [apilayerResponse, nameComResponse] = await Promise.all([apilayerPromise, nameComPromise]);
+
+    // Procesar las respuestas
+    const apilayerData = apilayerResponse.data; // Datos de Apilayer
+    const nameComData = nameComResponse.data;   // Datos de Name.com
+
+    // Combinar respuestas (puedes personalizar este formato)
+    const combinedResponse = {
+      apilayer: apilayerData,
+      nameCom: nameComData,
+    };
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(combinedResponse),
+    };
+
+  } catch (error) {
+    console.error('Error en la función:', error.message);
+
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Error al verificar el dominio' }),
+      body: JSON.stringify({
+        message: 'Ocurrió un error al procesar la solicitud.',
+        error: error.message,
+      }),
     };
   }
 };
