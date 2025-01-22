@@ -17,19 +17,7 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido.' }),
     };
-  }
-
-  if (!domain) {
-    return {
-      statusCode: 400,  // Bad request si no se proporciona el dominio
-      headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ error: 'El parámetro "domain" es obligatorio.' }),
-    };
-  }
-
+    
   try {
     // Consulta a la API WHOIS
     const response = await axios.get(`https://www.whoisxmlapi.com/whoisserver/WhoisService?domainName=${domain}&apiKey=${apiKey}&outputFormat=JSON`);
@@ -37,19 +25,15 @@ exports.handler = async (event) => {
     // Analiza la respuesta y proporciona los datos necesarios
     if (response.data && response.data.WhoisRecord) {
       const isAvailable = response.data.WhoisRecord.domainName === null; // El dominio es disponible si WhoisRecord no contiene datos
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': allowedOrigin,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          result: isAvailable ? 'available' : 'registered',
-          domain: domain,
-          whoisData: response.data.WhoisRecord,
-        }),
-      };
-    }
+         return {
+
+      statusCode: 200,
+
+      body: JSON.stringify(response.data)
+
+
+    };
+
 
     return {
       statusCode: 404,
@@ -60,16 +44,16 @@ exports.handler = async (event) => {
       body: JSON.stringify({ error: 'Dominio no encontrado o error en la consulta.' }),
     };
 
-  } catch (error) {
+  } catch (message) {
+
     return {
+
       statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': allowedOrigin,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ error: 'Error al consultar Whois.' }),
+
+      body: JSON.stringify({ message: 'el dominio esta disponible?' })
+
     };
+
   }
+
 };
-
-
