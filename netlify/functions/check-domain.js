@@ -5,8 +5,8 @@ exports.handler = async (event) => {
   const origin = event.headers.origin || event.headers['x-forwarded-for'];
   const secretHeader = event.headers['x-worker-secret']; // Header personalizado
   const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
-  const apiKey = process.env.apiKey; // Variable para la API de Apilayer
-  const apiKeyNameCom = process.env.apiKeyNameCom; // Variable para la API de Name.com
+  const apiKey = process.env.API_KEY; // Apilayer
+  const apiKeyNameCom = process.env.API_KEY_NAMECOM; // Name.com
 
   // Validación del secreto para permitir solo solicitudes autorizadas
   if (secretHeader !== expectedSecret) {
