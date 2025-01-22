@@ -2,7 +2,7 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain; // Obtener el dominio desde la query string
-  const apiKey = process.env.API_KEY;  // Tu API Key para hacer la consulta a la API de Whois
+  const apiKey = process.env.API_KEY;  // Tu API Key de WhoisXMLAPI o la que estés utilizando
   const allowedOrigin = 'https://businessasesores.web.app';  // El origen permitido para solicitudes
 
   // Verificamos que la solicitud provenga de un origen permitido (tu frontend)
@@ -19,7 +19,6 @@ exports.handler = async (event) => {
     };
   }
 
-  // Aseguramos que el dominio se haya proporcionado en la consulta
   if (!domain) {
     return {
       statusCode: 400,  // Bad request si no se proporciona el dominio
@@ -32,55 +31,45 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Realizamos la consulta a la API de Whois para verificar el dominio
-    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: { apikey: apiKey },
-    });
-
-    // Si la respuesta es positiva (dominio registrado)
-    if (response.data.status === 'registered') {
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': allowedOrigin,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ result: 'registered', domain: domain }),
-      };
-    }
+    // Consulta a la API WHOIS
+    const response = await axios.get(`https://www.whoisxmlapi.com/whoisserver/WhoisService?domainName=${domain}&apiKey=${apiKey}&outputFormat=JSON`);
     
-    // Si el dominio está disponible (no registrado)
-    if (response.data.status === 'available') {
+    // Analiza la respuesta y proporciona los datos necesarios
+    if (response.data && response.data.WhoisRecord) {
+      const isAvailable = response.data.WhoisRecord.domainName === null; // El dominio es disponible si WhoisRecord no contiene datos
       return {
         statusCode: 200,
         headers: {
           'Access-Control-Allow-Origin': allowedOrigin,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ result: 'available', domain: domain }),
+        body: JSON.stringify({
+          result: isAvailable ? 'available' : 'registered',
+          domain: domain,
+          whoisData: response.data.WhoisRecord,
+        }),
       };
     }
 
-    // Si no se pudo determinar el estado, regresamos un error
     return {
       statusCode: 404,
       headers: {
         'Access-Control-Allow-Origin': allowedOrigin,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'No se pudo determinar el estado del dominio.' }),
+      body: JSON.stringify({ error: 'Dominio no encontrado o error en la consulta.' }),
     };
 
   } catch (error) {
-    // En caso de un error con la consulta (error general)
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': allowedOrigin,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ error: 'Error en la consulta de Whois. El dominio no fue encontrado o hubo un problema.' }),
+      body: JSON.stringify({ error: 'Error al consultar Whois.' }),
     };
   }
 };
+
 
