@@ -6,49 +6,31 @@ exports.handler = async (event) => {
   const origin = event.headers['origin'];
   const allowedOrigin = 'https://businessasesores.web.app';
 
-
-  try {
-
-    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: {
-        'apikey': apiKey
-
-      },
-
-      timeout: 5000
-
-    });
-
-      
-
-
-    return {
-
-      statusCode: 200,
-
-      body: JSON.stringify(response.data)
-
-
-    };
-
-    if (origin !== allowedOrigin) {
+  // Configuración de CORS
+  if (origin !== allowedOrigin) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ result: 'Solicitud no autorizada: Origen no permitido' })
+      body: JSON.stringify({ error: 'Solicitud no autorizada: Origen no permitido' }),
     };
   }
 
-
-  } catch (message) {
+  try {
+    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+      headers: { apikey: apiKey },
+      timeout: 5000,
+    });
 
     return {
-
-      statusCode: 500,
-
-      body: JSON.stringify({ message: 'el dominio esta disponible?' })
-
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+      },
+      body: JSON.stringify(response.data),
     };
-
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Error al consultar el dominio' }),
+    };
   }
-
 };
