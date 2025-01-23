@@ -1,13 +1,12 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters.domain; // Obtenemos el dominio de la query string
-  const secretHeader = event.headers['x-worker-secret']; // Header personalizado enviado desde el Worker
-  const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
-  const apiKey = process.env.API_KEY; // Variable para la API de Apilayer
-  const apiKeyNameCom = process.env.API_KEY_NAMECOM; // Variable para la API de Name.com
+  const domain = event.queryStringParameters.domain;
+  const secretHeader = event.headers['x-worker-secret'];
+  const expectedSecret = process.env.WORKER_SECRET;
+  const apiKey = process.env.API_KEY;
+  const apiKeyNameCom = process.env.API_KEY_NAMECOM;
 
-  // Validación del secreto para permitir solo solicitudes autorizadas
   if (secretHeader !== expectedSecret) {
     return {
       statusCode: 403,
@@ -16,34 +15,26 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Llamada a la API de Apilayer
     const apilayerPromise = axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
-      headers: {
-        'apikey': apiKey, // Se pasa la API Key de Apilayer
-      },
-      timeout: 5000, // Timeout de 5 segundos para la respuesta
+      headers: { apikey: apiKey },
     });
 
-    // Llamada a la API de Name.com
-    const nameComPromise = axios.post('https://api.name.com/v4/domains:check', 
-      { domainNames: [domain] }, // Enviamos el dominio para verificar
-      { headers: { Authorization: `Bearer ${apiKeyNameCom}` }, timeout: 8000 } // API Key de Name.com
+    const nameComPromise = axios.post(
+      'https://api.name.com/v4/domains:check',
+      { domainNames: [domain] },
+      { headers: { Authorization: `Bearer ${apiKeyNameCom}` } }
     );
 
-    // Esperamos ambas respuestas de las APIs de manera simultánea
     const [apilayerResponse, nameComResponse] = await Promise.all([apilayerPromise, nameComPromise]);
 
-    // Combinamos las respuestas en un solo objeto
     return {
       statusCode: 200,
       body: JSON.stringify({
+        result: nameComResponse.data.results[0].available ? 'available' : 'unavailable',
         apilayer: apilayerResponse.data,
-        nameCom: nameComResponse.data,
       }),
     };
   } catch (error) {
-    // Si hay algún error, lo manejamos y devolvemos un mensaje adecuado
-    console.error('Error en la función:', error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Error procesando la solicitud.', error: error.message }),
