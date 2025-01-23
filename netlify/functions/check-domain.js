@@ -21,6 +21,13 @@ exports.handler = async (event) => {
     });
 
 
+    if (secretHeader !== expectedSecret) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
+    };
+  }
+
     return {
 
       statusCode: 200,
@@ -30,12 +37,7 @@ exports.handler = async (event) => {
     };
 
 
-      if (secretHeader !== expectedSecret) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
-    };
-  }
+    
 
 
 
