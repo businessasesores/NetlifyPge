@@ -8,6 +8,13 @@ exports.handler = async (event) => {
 
 
 
+   if (secretHeader !== expectedSecret) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
+    };
+  }
+
     try {
 
     const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
@@ -21,12 +28,7 @@ exports.handler = async (event) => {
     });
 
 
-    if (secretHeader !== expectedSecret) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
-    };
-  }
+    
 
     return {
 
@@ -38,7 +40,6 @@ exports.handler = async (event) => {
 
 
     
-
 
 
   } catch (message) {
