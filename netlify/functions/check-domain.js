@@ -2,8 +2,8 @@ const axios = require('axios');
 
 exports.handler = async (event) => {
   const domain = event.queryStringParameters.domain; // Obtenemos el dominio de la query string
-  const secretHeader = event.headers['x-worker-secret']; // Header personalizado
-  const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en las variables de entorno de Netlify
+  const secretHeader = event.headers['my-secret-key']; // Header personalizado
+  const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
   const apiKey = process.env.API_KEY; // Variable para la API de Apilayer
   const apiKeyNameCom = process.env.API_KEY_NAMECOM; // Variable para la API de Name.com
 
