@@ -7,12 +7,6 @@ exports.handler = async (event) => {
   const apiKey = process.env.API_KEY;
 
 
-  if (secretHeader !== expectedSecret) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
-    };
-  }
 
     try {
 
@@ -26,14 +20,20 @@ exports.handler = async (event) => {
 
     });
 
-      
-
 
     return {
 
       statusCode: 200,
 
       body: JSON.stringify(response.data)
+
+
+      if (secretHeader !== expectedSecret) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
+    };
+  }
 
 
 
