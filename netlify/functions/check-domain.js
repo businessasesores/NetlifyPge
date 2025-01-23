@@ -27,6 +27,8 @@ exports.handler = async (event) => {
 
       body: JSON.stringify(response.data)
 
+    };
+
 
       if (secretHeader !== expectedSecret) {
     return {
