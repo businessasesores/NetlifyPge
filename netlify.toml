@@ -6,6 +6,6 @@
   for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin = "*",
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS",
+    Access-Control-Allow-Headers = "Content-Type, x-worker-secret",
     Access-Control-Max-Age = "3600"
