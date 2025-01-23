@@ -1,12 +1,12 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters.domain; // Dominio desde los parámetros
-  const secretHeader = event.headers['x-worker-secret']; // Secreto recibido desde el encabezado
-  const expectedSecret = process.env.WORKER_SECRET; // Secreto almacenado en Netlify
-  const apiKey = process.env.API_KEY; // API Key de Apilayer desde las variables de entorno
+  const domain = event.queryStringParameters?.domain; // Obtenemos el dominio de los parámetros
+  const secretHeader = event.headers['x-worker-secret']; // Obtenemos el header personalizado
+  const expectedSecret = process.env.WORKER_SECRET; // El secreto esperado
+  const apiKey = process.env.API_KEY; // API Key para Apilayer
 
-  // Validar el encabezado secreto
+  // Validar el header del secreto
   if (secretHeader !== expectedSecret) {
     return {
       statusCode: 403,
@@ -15,33 +15,23 @@ exports.handler = async (event) => {
   }
 
   try {
-    // Llamada a la API de Apilayer
-    const response = await fetch(`https://api.apilayer.com/whois/query?domain=${domain}`, {
+    // Llamada directa a la API de Apilayer
+    const response = await axios.get(`https://api.apilayer.com/whois/query?domain=${domain}`, {
       headers: { apikey: apiKey },
     });
 
-    // Procesar la respuesta de la API
-    if (!response.ok) {
-      throw new Error(`API de Apilayer respondió con un estado ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Devolver la respuesta con los datos de la API
+    // Devolver la respuesta tal cual viene de Apilayer
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(response.data),
     };
   } catch (error) {
-    console.error('Error procesando la solicitud:', error.message);
-
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ message: 'Error procesando la solicitud.', error: error.message }),
+      body: JSON.stringify({
+        message: 'Error al consultar el dominio.',
+        error: error.message,
+      }),
     };
   }
 };
-
-
