@@ -1,37 +1,59 @@
 const axios = require('axios');
 
-// Función para registrar el dominio con GoDaddy
-async function registerWithGoDaddy(domain) {
-  const apiKeyGoDaddy = process.env.GODADDY_API_KEY;
-  const apiSecretGoDaddy = process.env.GODADDY_API_SECRET;
+exports.handler = async (event) => {
+  const domain = event.queryStringParameters?.domain; // Dominio a registrar
+  const secretHeader = event.headers['x-worker-secret']; // Secreto personalizado
+  const expectedSecret = process.env.WORKER_SECRET; // Secreto esperado
+  const apiKey = process.env.GODADDY_API_KEY; // API Key de GoDaddy
+  const apiSecret = process.env.GODADDY_API_SECRET; // API Secret de GoDaddy
+
+  // Validar el secreto
+  if (secretHeader !== expectedSecret) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
+    };
+  }
+
+  if (!domain) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Falta el parámetro "domain".' }),
+    };
+  }
 
   try {
-    const registrationResponse = await axios.post(
-      'https://api.godaddy.com/v1/domains/purchase', 
+    // Llamar a la API de GoDaddy para registrar el dominio
+    const response = await axios.post(
+      `https://api.godaddy.com/v1/domains/purchase`,
       {
-        domain: domain,
+        domain,
         consent: {
-          agreementKeys: ['DNRA'], // Asegúrate de usar los términos correctos
           agreedAt: new Date().toISOString(),
-          agreedBy: 'user_ip_address', // Sustituye con la IP o identificador válido
+          agreedBy: "127.0.0.1",
+          agreementKeys: ["DNRA"],
         },
       },
       {
         headers: {
-          'Authorization': `sso-key ${apiKeyGoDaddy}:${apiSecretGoDaddy}`,
+          Authorization: `sso-key ${apiKey}:${apiSecret}`,
           'Content-Type': 'application/json',
         },
       }
     );
 
-    if (registrationResponse.status !== 200) {
-      throw new Error(`Error al registrar dominio en GoDaddy: ${registrationResponse.statusText}`);
-    }
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response.data),
+    };
 
-    return registrationResponse.data;
   } catch (error) {
-    throw new Error(`Error al registrar el dominio con GoDaddy: ${error.message}`);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Error al registrar el dominio en GoDaddy.',
+        error: error.message,
+      }),
+    };
   }
-}
-
-module.exports = { registerWithGoDaddy };  // Exporta la función para usarla en check-domain.js
+};
