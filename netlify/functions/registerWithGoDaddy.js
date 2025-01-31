@@ -1,43 +1,42 @@
 const axios = require('axios');
 
 exports.handler = async (event) => {
-  const domain = event.queryStringParameters?.domain; // Dominio a registrar
-  const secretHeader = event.headers['x-worker-secret']; // Secreto personalizado
-  const expectedSecret = process.env.WORKER_SECRET; // Secreto esperado
-  const apiKey = process.env.GODADDY_API_KEY; // API Key de GoDaddy
-  const apiSecret = process.env.GODADDY_API_SECRET; // API Secret de GoDaddy
+  const domain = event.queryStringParameters?.domain;
+  const secretHeader = event.headers['x-worker-secret']; // Obtenemos el header personalizado
+  const expectedSecret = process.env.WORKER_SECRET; // El secreto esperado
+  const apiKey = process.env.GODADDY_API_KEY;
+  const apiSecret = process.env.GODADDY_API_SECRET;
 
-  // Validar el secreto
-  if (secretHeader !== expectedSecret) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ message: 'Solicitud no autorizada. Secreto inválido.' }),
-    };
-  }
-
+ 
   if (!domain) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ message: 'Falta el parámetro "domain".' }),
+      body: JSON.stringify({ message: 'Debe proporcionar un dominio' }),
     };
   }
 
   try {
-    // Llamar a la API de GoDaddy para registrar el dominio
     const response = await axios.post(
       `https://api.godaddy.com/v1/domains/purchase`,
       {
-        domain,
+        domain: domain,
         consent: {
           agreedAt: new Date().toISOString(),
           agreedBy: "127.0.0.1",
           agreementKeys: ["DNRA"],
         },
+        contactAdmin: {
+          nameFirst: "Bussines",
+          nameLast: "asesores",
+          email: "gaposetra@gmail.com",
+          phone: "+573022114662",
+          country: "CO",
+        },
       },
       {
         headers: {
-          Authorization: `sso-key ${apiKey}:${apiSecret}`,
-          'Content-Type': 'application/json',
+          "Authorization": `sso-key ${apiKey}:${apiSecret}`,
+          "Content-Type": "application/json",
         },
       }
     );
@@ -46,13 +45,12 @@ exports.handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify(response.data),
     };
-
   } catch (error) {
     return {
-      statusCode: 500,
+      statusCode: error.response?.status || 500,
       body: JSON.stringify({
-        message: 'Error al registrar el dominio en GoDaddy.',
-        error: error.message,
+        message: "Error al registrar el dominio en GoDaddy.",
+        error: error.response?.data || error.message,
       }),
     };
   }
