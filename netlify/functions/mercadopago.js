@@ -1,4 +1,3 @@
-// netlify/functions/mercadopago.js
 const mercadopago = require('mercadopago');
 
 // Acceder al Access Token de MercadoPago desde la variable de entorno
@@ -22,9 +21,9 @@ exports.handler = async function(event, context) {
         }
       ],
       back_urls: {
-        success: 'https://businessasesores.web.app/success',  // URL de éxito
-        failure: 'https://businessasesores.web.app/failure',  // URL de error
-        pending: 'https://businessasesores.web.app/pending'   // URL de pendiente
+        success: 'https://businessasesores.web.app/',  // URL de éxito
+        failure: 'https://businessasesores.web.app/',  // URL de error
+        pending: 'https://businessasesores.web.app/'   // URL de pendiente
       },
       auto_return: 'approved'  // Regresar automáticamente al usuario después del pago
     };
