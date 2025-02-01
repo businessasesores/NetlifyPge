@@ -1,36 +1,13 @@
-const mercadopago = require('mercadopago'); 
+const mercadopago = require('mercadopago');
 
-// Acceder al Access Token desde las variables 
-const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
+// Configura MercadoPago correctamente para la versión 2.3.0
+mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
-// Asegúrate de que el Access Token esté disponible
-if (!accessToken) {
-  return {
-    statusCode: 500,
-    body: JSON.stringify({ message: 'Access Token no configurado en las variables de entorno.' }),
-  };
-}
-
-// Configurar MercadoPago con el Access Token
-mercadopago.configurations.setAccessToken(accessToken);
-
-// (Opcional) Si necesitas el Public Key en algún punto del backend, también podrías configurarlo
-// (Normalmente se usa en el frontend, no en el backend, pero si necesitas puedes agregarlo aquí)
-const publicKey = process.env.MERCADO_PAGO_PUBLIC_KEY; 
-
-if (!publicKey) {
-  return {
-    statusCode: 500,
-    body: JSON.stringify({ message: 'Public Key no configurado en las variables de entorno.' }),
-  };
-}
-
-// Configuración de la preferencia de pago
 exports.handler = async function(event, context) {
   if (event.httpMethod === 'POST') {
     const { dominios, total } = JSON.parse(event.body);  // Datos enviados desde el frontend
 
-    // Crea la preferencia de pago
+    // Crear la preferencia de pago
     const preference = {
       items: [
         {
@@ -41,9 +18,9 @@ exports.handler = async function(event, context) {
         }
       ],
       back_urls: {
-        success: 'https://businessasesores.web.app/',  // URL de éxito
-        failure: 'https://businessasesores.web.app/',  // URL de error
-        pending: 'https://businessasesores.web.app/'   // URL de pendiente
+        success: 'https://tu-sitio.com/success',  // URL de éxito
+        failure: 'https://tu-sitio.com/failure',  // URL de error
+        pending: 'https://tu-sitio.com/pending'   // URL de pendiente
       },
       auto_return: 'approved'  // Regresar automáticamente al usuario después del pago
     };
@@ -71,4 +48,5 @@ exports.handler = async function(event, context) {
     };
   }
 };
+
 
