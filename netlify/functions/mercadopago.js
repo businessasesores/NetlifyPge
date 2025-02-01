@@ -1,6 +1,6 @@
 const mercadopago = require('mercadopago'); 
 
-// Acceder al Access Token desde las variables de entorno de Netlify
+// Acceder al Access Token desde las variables 
 const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 
 // Asegúrate de que el Access Token esté disponible
