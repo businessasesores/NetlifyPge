@@ -1,6 +1,11 @@
 const mercadopago = require('mercadopago');
 
-// Configura MercadoPago correctamente para la versión 2.3.0
+// Verifica que el token esté presente antes de intentar usarlo
+if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) {
+  throw new Error('El Access Token no está configurado correctamente en las variables de entorno.');
+}
+
+// Configura MercadoPago con el token de acceso
 mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
 exports.handler = async function(event, context) {
@@ -18,9 +23,9 @@ exports.handler = async function(event, context) {
         }
       ],
       back_urls: {
-        success: 'https://tu-sitio.com/success',  // URL de éxito
-        failure: 'https://tu-sitio.com/failure',  // URL de error
-        pending: 'https://tu-sitio.com/pending'   // URL de pendiente
+        success: 'https://businessasesores.web.app/',  // URL de éxito
+        failure: 'https://businessasesores.web.app/',  // URL de error
+        pending: 'https://businessasesores.web.app/'   // URL de pendiente
       },
       auto_return: 'approved'  // Regresar automáticamente al usuario después del pago
     };
@@ -48,5 +53,3 @@ exports.handler = async function(event, context) {
     };
   }
 };
-
-
