@@ -2,9 +2,6 @@
   command = ""
   publish = "netlify"
 
-  [functions]
-  directory = "netlify/functions"
-
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
