@@ -1,15 +1,13 @@
+// webpack.config.js
 const path = require('path');
 
 module.exports = {
   target: 'node', // Importante para Netlify Functions
-  entry: './netlify/functions/mercadopago.js', // Ruta a tu función
+  entry: './netlify/functions/mercadopago.js', // La ruta a tu función
   output: {
-    filename: 'mercadopago.js', // Nombre del archivo de salida
-    path: path.resolve(__dirname, 'netlify/functions'), // Carpeta de salida
-    libraryTarget: 'commonjs2', // Importante para Netlify Functions
+    filename: 'mercadopago.js', // El nombre del archivo de salida
+    path: path.resolve(__dirname, '.netlify/functions'), // La carpeta de salida para Netlify
+    libraryTarget: 'commonjs2', //  ¡CRUCIAL!  Para compatibilidad con Netlify Functions
   },
-  // Esta sección es crucial para incluir las dependencias
-  externals: {
-    'mercadopago': 'commonjs mercadopago', // Incluye mercadopago
-  },
+  // No necesitas plugins ni loaders especiales para axios y mercadopago
 };
