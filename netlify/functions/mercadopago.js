@@ -1,7 +1,7 @@
 import * as mercadopago from 'mercadopago';
 import axios from 'axios';
 
-export const handler = async (event, context) => {
+exports.handler = async (event, context) => {
   try {
     mercadopago.configure({
       access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN,
