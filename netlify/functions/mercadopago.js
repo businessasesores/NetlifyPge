@@ -1,55 +1,42 @@
 const mercadopago = require('mercadopago');
 
-// Verifica que el token esté presente antes de intentar usarlo
-if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) {
-  throw new Error('El Access Token no está configurado correctamente en las variables de entorno.');
-}
+const accessToken = 'APP_USR-7637184600887888-040602-c75180a883ad24b9c38576741213cb60-1040849203'; // Pone aquí tu Access Token directamente
 
-// Configura MercadoPago con el token de acceso
-mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_ACCESS_TOKEN);
+// Configuración del token de acceso
+mercadopago.configurations.setAccessToken(accessToken);
 
-exports.handler = async function(event, context) {
-  if (event.httpMethod === 'POST') {
-    const { dominios, total } = JSON.parse(event.body);  // Datos enviados desde el frontend
-
-    // Crear la preferencia de pago
+// Esta parte es para gestionar la creación de una preferencia, si lo necesitas
+exports.handler = async (event, context) => {
+  try {
     const preference = {
       items: [
         {
-          title: dominios,  // Nombre del dominio
+          title: 'Test Item',
           quantity: 1,
-          currency_id: 'COP',  // O 'USD', según tu moneda
-          unit_price: total  // El precio total
+          unit_price: 100.0
         }
-      ],
-      back_urls: {
-        success: 'https://businessasesores.web.app/',  // URL de éxito
-        failure: 'https://businessasesores.web.app/',  // URL de error
-        pending: 'https://businessasesores.web.app/'   // URL de pendiente
-      },
-      auto_return: 'approved'  // Regresar automáticamente al usuario después del pago
+      ]
     };
 
-    try {
-      // Crear la preferencia
-      const response = await mercadopago.preferences.create(preference);
-
-      // Devuelve la URL de pago
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ init_point: response.body.init_point }),
-      };
-    } catch (error) {
-      // Manejo de errores
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ message: 'Error al crear la preferencia de pago', error }),
-      };
-    }
-  } else {
+    // Crea la preferencia
+    const response = await mercadopago.preferences.create(preference);
+    
     return {
-      statusCode: 405,
-      body: JSON.stringify({ message: 'Método no permitido' }),
+      statusCode: 200,
+      body: JSON.stringify({
+        id: response.body.id
+      })
+    };
+
+  } catch (error) {
+    console.error("Error creating preference:", error);
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Error en la creación de la preferencia',
+        error: error.message
+      })
     };
   }
 };
