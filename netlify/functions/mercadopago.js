@@ -1,4 +1,4 @@
-const mercadopago = require('mercadopago'); // Importación correcta para CommonJS
+import mercadopago from 'mercadopago';
 
 exports.handler = async (event, context) => {
   try {
