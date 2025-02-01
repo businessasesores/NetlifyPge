@@ -13,6 +13,3 @@
   },
   "type": "module"
 }
-"scripts": {
-  "build": "webpack --config webpack.config.js --mode production" // Usa el archivo de configuración
-},
