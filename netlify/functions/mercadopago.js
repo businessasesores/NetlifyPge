@@ -1,15 +1,31 @@
-const mercadopago = require('mercadopago');
+const mercadopago = require('mercadopago'); 
 
-// Acceder al Access Token de MercadoPago desde la variable de entorno
+// Acceder al Access Token desde las variables de entorno de Netlify
 const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 
+// Asegúrate de que el Access Token esté disponible
 if (!accessToken) {
-  throw new Error("MERCADO_PAGO_ACCESS_TOKEN no está configurado en el entorno.");
+  return {
+    statusCode: 500,
+    body: JSON.stringify({ message: 'Access Token no configurado en las variables de entorno.' }),
+  };
 }
 
-// Configurar MercadoPago con el token
+// Configurar MercadoPago con el Access Token
 mercadopago.configurations.setAccessToken(accessToken);
 
+// (Opcional) Si necesitas el Public Key en algún punto del backend, también podrías configurarlo
+// (Normalmente se usa en el frontend, no en el backend, pero si necesitas puedes agregarlo aquí)
+const publicKey = process.env.MERCADO_PAGO_PUBLIC_KEY; 
+
+if (!publicKey) {
+  return {
+    statusCode: 500,
+    body: JSON.stringify({ message: 'Public Key no configurado en las variables de entorno.' }),
+  };
+}
+
+// Configuración de la preferencia de pago
 exports.handler = async function(event, context) {
   if (event.httpMethod === 'POST') {
     const { dominios, total } = JSON.parse(event.body);  // Datos enviados desde el frontend
@@ -42,7 +58,7 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ init_point: response.body.init_point }),
       };
     } catch (error) {
-      console.error("Error al crear la preferencia:", error);
+      // Manejo de errores
       return {
         statusCode: 500,
         body: JSON.stringify({ message: 'Error al crear la preferencia de pago', error }),
@@ -55,3 +71,4 @@ exports.handler = async function(event, context) {
     };
   }
 };
+
