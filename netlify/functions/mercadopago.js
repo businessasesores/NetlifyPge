@@ -1,7 +1,7 @@
-const mercadopago = require('mercadopago');
-const axios = require('axios');
+import * as mercadopago from 'mercadopago';
+import axios from 'axios';
 
-exports.handler = async (event, context) => {
+export const handler = async (event, context) => {
   try {
     mercadopago.configure({
       access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN,
