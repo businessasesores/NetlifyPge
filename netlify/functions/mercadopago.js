@@ -3,6 +3,10 @@ const mercadopago = require('mercadopago');
 // Acceder al Access Token de MercadoPago desde la variable de entorno
 const accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN;
 
+if (!accessToken) {
+  throw new Error("MERCADO_PAGO_ACCESS_TOKEN no está configurado en el entorno.");
+}
+
 // Configurar MercadoPago con el token
 mercadopago.configurations.setAccessToken(accessToken);
 
@@ -38,7 +42,7 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ init_point: response.body.init_point }),
       };
     } catch (error) {
-      // Manejo de errores
+      console.error("Error al crear la preferencia:", error);
       return {
         statusCode: 500,
         body: JSON.stringify({ message: 'Error al crear la preferencia de pago', error }),
