@@ -1,5 +1,5 @@
-import * as mercadopago from 'mercadopago';
-import axios from 'axios';
+const mercadopago = require('mercadopago');
+const axios = require('axios');
 
 exports.handler = async (event, context) => {
   try {
